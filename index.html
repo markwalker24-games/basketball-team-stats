@@ -229,6 +229,13 @@ table.box{border-collapse:collapse;font-size:13px;min-width:100%;font-variant-nu
 .lrow{display:flex;align-items:center;gap:10px;padding:11px 2px;border-bottom:1px solid var(--line);font-size:14px}
 .lrow .tm2{font:600 13px var(--cond);color:var(--muted);width:56px;flex:none;letter-spacing:.5px}
 .lrow .tx{flex:1;font-weight:500}
+.lrow .lmain{flex:1;display:flex;align-items:center;gap:10px;text-align:left;min-width:0}
+.lrow .lmain .tx::after{content:"✎";color:var(--muted);font-size:12px;margin-left:6px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{padding:8px 12px;border-radius:999px;background:var(--surface);border:1px solid var(--line2);font-weight:600;font-size:14px}
+.chips button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.chips button:disabled{opacity:.35}
+.chips button b{font:700 16px var(--cond);margin-right:3px}
 .lrow button{background:#fbeee6;color:var(--miss);border-radius:9px;width:32px;height:32px;font-size:13px}
 .grow{display:flex;justify-content:space-between;align-items:center;width:100%;padding:14px;border-radius:14px;background:var(--surface);border:1px solid var(--line);margin-bottom:8px;text-align:left}
 .grow .gl{display:flex;align-items:center;gap:10px}
@@ -340,6 +347,54 @@ textarea.cp{width:100%;height:160px;font-size:13px;border:1px solid var(--line2)
 .syncln{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted);margin-top:4px}
 .syncln i{width:8px;height:8px;border-radius:50%;background:#22a06b}
 .syncln i.off{background:#c9a227}
+/* ---- tour + help ---- */
+.tour{position:fixed;inset:0;z-index:25;background:linear-gradient(180deg,#fbf7f1,#f3e9dc);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top);animation:tfade .25s ease-out}
+@keyframes tfade{from{opacity:0}to{opacity:1}}
+.thead{display:flex;justify-content:space-between;align-items:center;padding:12px 16px 0}
+.thead span{font:800 16px var(--cond);letter-spacing:1px;color:var(--muted)}
+.thead button{color:var(--muted);font-weight:600;font-size:14px;padding:6px 10px}
+.tslides{flex:1;min-height:0;display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
+.tslides::-webkit-scrollbar{display:none}
+.tslide{flex:0 0 100%;scroll-snap-align:center;scroll-snap-stop:always;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 28px;text-align:center;box-sizing:border-box}
+.tvis{width:100%;max-width:330px;height:min(36vh,270px);display:flex;align-items:center;justify-content:center;position:relative;margin-bottom:22px;background:var(--surface);border:1px solid var(--line);border-radius:26px;box-shadow:0 14px 30px rgba(90,50,20,.10)}
+.tslide h2{margin:0 0 10px;font:800 32px/1.05 var(--cond);letter-spacing:.2px}
+.tslide p{margin:0;color:var(--muted);font-size:15.5px;line-height:1.5;max-width:340px}
+.tslide p b{color:var(--text)}
+.tfoot{padding:14px 20px calc(18px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:12px}
+.tdots{flex:1;display:flex;gap:6px}
+.tdots i{width:7px;height:7px;border-radius:4px;background:var(--line2);transition:width .2s,background .2s}
+.tdots i.on{width:22px;background:var(--accent)}
+.tfoot .btn{min-width:128px}
+.tback{color:var(--muted);font-weight:600;padding:12px 8px}
+.tap{position:absolute;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;border:3px solid var(--accent);animation:tap 1.8s infinite;pointer-events:none;z-index:3}
+.tap.d2{animation-delay:.9s}
+@keyframes tap{0%{transform:scale(.3);opacity:0}25%{opacity:1}100%{transform:scale(1.7);opacity:0}}
+.mrow{display:flex;gap:10px;align-items:flex-end;justify-content:center}
+.mj{width:62px;text-align:center;font-size:12px;color:var(--muted)}
+.mj .jz{width:100%}
+.mj.on .jz{transform:translateY(-5px) scale(1.08);filter:drop-shadow(0 8px 10px color-mix(in srgb,var(--accent) 55%,transparent))}
+.mj.on>span:last-child{display:inline-block;background:var(--ink);color:#fff;border-radius:999px;padding:0 7px;margin-top:2px}
+.mbtn{border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;font:800 26px/1 var(--cond)}
+.mbtn.mk2{background:radial-gradient(120% 90% at 30% 10%,#ff9a4d 0%,#ec6a1e 45%,#cf520f 100%);color:#fff;box-shadow:0 6px 14px rgba(232,102,28,.28)}
+.mbtn.ms2{background:#fff;border:1.5px solid #ead7c6;color:var(--miss);font-size:15px;letter-spacing:1px}
+.mbtn.ac2{background:#fff;border:1px solid var(--line);font-size:17px;letter-spacing:1px;box-shadow:0 3px 8px rgba(90,50,20,.07)}
+.mbtn small{font:700 9px Inter;letter-spacing:.5px;opacity:.85;margin-top:3px}
+.mgrid{display:grid;grid-template-columns:repeat(4,58px);gap:7px}
+.mck{background:#1f1a17;color:#ffb04a;border-radius:14px;padding:8px 14px;font:700 34px/1 var(--cond);text-align:center;box-shadow:inset 0 2px 8px rgba(0,0,0,.6)}
+.mck small{display:block;color:#a89a8d;font:700 9px Inter;letter-spacing:1px;margin-top:3px}
+.mpill{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 13px;border-radius:999px;background:#fff;border:1px solid var(--line2);font:700 13px Inter}
+.mpill svg{width:16px;height:16px}
+.mplays{width:240px;text-align:left;font-size:13px}
+.mplays div{display:flex;justify-content:space-between;padding:7px 4px;border-bottom:1px solid var(--line)}
+.mplays div.x{color:var(--miss);text-decoration:line-through}
+.helpq details{border:1px solid var(--line);border-radius:14px;background:var(--surface);margin-bottom:8px}
+.helpq summary{padding:14px;font-weight:700;font-size:15px;list-style:none;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+.helpq summary::-webkit-details-marker{display:none}
+.helpq summary::after{content:"+";color:var(--muted);font-size:20px;font-weight:400}
+.helpq details[open] summary::after{content:"–"}
+.helpq .a{padding:0 14px 14px;color:var(--muted);font-size:14px;line-height:1.55}
+.helpq .a b{color:var(--text)}
+.qbtn{width:34px;height:34px;border-radius:50%;background:var(--surface);border:1px solid var(--line2);font:800 17px var(--cond);color:var(--text);box-shadow:0 2px 6px rgba(90,50,20,.06)}
 /* ---- fit-to-screen layout (no scrolling) ---- */
 html,body{height:100%;overflow:hidden}
 #root{height:100vh;height:100dvh;min-height:0;padding-top:env(safe-area-inset-top);overflow:hidden}
@@ -475,7 +530,7 @@ function mergeLive(t,r){
   var takeB=vb&&(!va||(!a.events.length&&(r.events||[]).length)||((r.events||[]).length&&a.events.length&&(r.cr||0)>(a.cr||0))||(!a.events.length&&!(r.events||[]).length&&(r.cr||0)>(a.cr||0)));
   if(takeB){t.live=liveFromDoc(r,t.settings.periodMin*60000);swapped=true;}
  }else{
-  var em={};a.events.forEach(function(e){em[e.id]=e;});(r.events||[]).forEach(function(e){if(!em[e.id]){em[e.id]=e;a.events.push(e);}});
+  var em={};a.events.forEach(function(e){em[e.id]=e;});(r.events||[]).forEach(function(e){var l=em[e.id];if(!l){em[e.id]=e;a.events.push(e);}else if((e.et||0)>(l.et||0)){for(var k in l)delete l[k];for(var k2 in e)l[k2]=e[k2];}});
   a.events.sort(function(x,y){return (x.ts||0)-(y.ts||0);});
   Object.keys(r.mins||{}).forEach(function(k){a.mins[k]=Math.max(a.mins[k]||0,r.mins[k]);});
   if((r.mAt||0)>(a.mAt||0)){a.opp=r.opp;a.oppAbbr=r.oppAbbr;a.oppColor=r.oppColor;a.date=r.date;a.mAt=r.mAt;}
@@ -571,11 +626,14 @@ function persist(msg){
 /* ---------- helpers ---------- */
 function rosterMap(r){var m={};r.forEach(function(p){m[p.id]=p;});return m;}
 function pname(id,r){var p=rosterMap(r||S.roster)[id];return p?'#'+p.num+' '+p.name:'(removed)';}
-function blank(){return {pts:0,fgm:0,fga:0,tpm:0,tpa:0,ftm:0,fta:0,orb:0,drb:0,ast:0,stl:0,blk:0,to:0,pf:0};}
+function blank(){return {pts:0,fgm:0,fga:0,tpm:0,tpa:0,ftm:0,fta:0,orb:0,drb:0,ast:0,stl:0,blk:0,to:0,pf:0,pm:0};}
+function fmtPm(v){v=v||0;return v>0?'+'+v:String(v);}
 function tally(ev){var m={};ev.forEach(function(e){if(!e.pid)return;var s=m[e.pid]||(m[e.pid]=blank());
  switch(e.type){case '3M':s.tpm++;s.tpa++;s.fgm++;s.fga++;s.pts+=3;break;case '3X':s.tpa++;s.fga++;break;
  case '2M':s.fgm++;s.fga++;s.pts+=2;break;case '2X':s.fga++;break;case 'FTM':s.ftm++;s.fta++;s.pts++;break;case 'FTX':s.fta++;break;
- case 'ORB':s.orb++;break;case 'DRB':s.drb++;break;case 'AST':s.ast++;break;case 'STL':s.stl++;break;case 'BLK':s.blk++;break;case 'TO':s.to++;break;case 'PF':s.pf++;break;}});return m;}
+ case 'ORB':s.orb++;break;case 'DRB':s.drb++;break;case 'AST':s.ast++;break;case 'STL':s.stl++;break;case 'BLK':s.blk++;break;case 'TO':s.to++;break;case 'PF':s.pf++;break;}});
+ ev.forEach(function(e){if(!e.on)return;var v=(e.pid&&PTS[e.type])?PTS[e.type]:(e.type==='OPP'?-(e.v||0):0);if(!v)return;e.on.forEach(function(id){var x=m[id]||(m[id]=blank());x.pm+=v;});});
+ return m;}
 function ourPts(ev){return ev.reduce(function(a,e){return a+((e.pid&&PTS[e.type])||0);},0);}
 function oppPts(ev){return ev.reduce(function(a,e){return a+(e.type==='OPP'?e.v:0);},0);}
 function perLabel(p){var n=S.settings.periods;if(p>n)return 'Overtime'+(p-n>1?' '+(p-n):'');return (n===2?'Half ':'Quarter ')+p;}
@@ -622,7 +680,7 @@ function andOneFor(pid){
 }
 function record(type,pid){
  var a1=(type==='FTM'&&pid)?andOneFor(pid):null;
- var e={id:uid(),ts:Date.now(),type:type,pid:pid,per:L.period,clk:Math.round(L.clockMs/1000)};
+ var e={id:uid(),ts:Date.now(),type:type,pid:pid,per:L.period,clk:Math.round(L.clockMs/1000)};if(PTS[type]&&pid)e.on=L.onCourt.slice();
  L.events.push(e);save();buzz();
  if(a1){flash={id:pid,lbl:'AND 1'};sel=null;pending=null;render();celebrate('AND <b>ONE!</b>',pname(pid)+' · '+(a1==='3M'?'4':'3')+'-point play');return;}
  if(type==='3M'&&pid){var t3=tally(L.events)[pid];flash={id:pid,lbl:'+3'};sel=null;pending=null;render();celebrate('LET\'S <b>GO!</b>',pname(pid)+(t3&&t3.tpm>1?' · '+t3.tpm+(['th','st','nd','rd'][(t3.tpm%100>10&&t3.tpm%100<14)?0:(t3.tpm%10<4?t3.tpm%10:0)])+' three':' · from deep'));return;}
@@ -632,7 +690,7 @@ function record(type,pid){
  sel=null;pending=null;render();
 }
 
-function pushEv(o){o.id=uid();o.ts=Date.now();o.per=L.period;o.clk=Math.round(L.clockMs/1000);L.events.push(o);save();buzz();return o;}
+function pushEv(o){o.id=uid();o.ts=Date.now();if(o.type==='OPP')o.on=L.onCourt.slice();o.per=L.period;o.clk=Math.round(L.clockMs/1000);L.events.push(o);save();buzz();return o;}
 function oppFoulCounts(ev){var m={};ev.forEach(function(e){if(e.type==='OPF'&&e.num)m[e.num]=(m[e.num]||0)+1;});return m;}
 function cnt(ev,type,per){return ev.filter(function(e){return e.type===type&&(per==null||e.per===per);}).length;}
 function applyStat(type,tg){
@@ -697,7 +755,7 @@ function homeHtml(){
  var rec=S.games.slice(-3).reverse();
  var recent=rec.length?'<div class="hlbl">RECENT GAMES'+(S.games.length>3?'<button data-act="history">See all</button>':'')+'</div><div>'+rec.map(function(g){var r=g.us>g.them?'W':g.us<g.them?'L':'T';
   return '<button class="grow" data-act="hist-open" data-id="'+g.id+'"><span class="gl"><span class="wl '+(r==='L'?'l':r==='T'?'t':'')+'">'+r+'</span><span><b>vs '+esc(g.opp)+'</b><br><span class="muted">'+esc(niceDate(g.date))+'</span></span></span><span class="gs">'+g.us+'–'+g.them+'</span></button>';}).join('')+'</div>':'';
- return '<div class="home"><div class="brand"><h1>🏀 Team Stats</h1><small>'+(DB.teams.length>1?DB.teams.length+' teams':'')+'</small></div>'+
+ return '<div class="home"><div class="brand"><h1>🏀 Team Stats</h1><button class="qbtn" data-act="help" aria-label="Help">?</button></div>'+
   '<div class="hlbl">TEAMS<button data-act="teams">Manage</button></div><div class="tcards">'+cards+'</div>'+hero+tiles+recent+
   (DB.teams.length>1?'<div class="muted" style="font-size:12px;text-align:center;margin-top:2px">Tip: press and hold a team card, then drag to reorder</div>':'')+'</div>';
 }
@@ -732,7 +790,7 @@ function packGame(g,isFinal){
  var T=tally(g.events),r=sortRoster(g.roster);
  return {v:1,t:g.team||S.team,a:S.abbr,o:g.opp,oa:g.oppAbbr||'OPP',d:g.date,f:isFinal?1:0,
   c:[S.settings.accent,S.settings.accent2,g.oppColor||'#1f1a17'],u:ourPts(g.events),m:oppPts(g.events),
-  p:r.filter(function(p){return T[p.id]||(g.mins&&g.mins[p.id]);}).map(function(p){var x=T[p.id]||blank();return [p.num,p.name,Math.round(((g.mins&&g.mins[p.id])||0)/1000),x.pts,x.fgm,x.fga,x.tpm,x.tpa,x.ftm,x.fta,x.orb,x.drb,x.ast,x.stl,x.blk,x.to,x.pf];}),
+  p:r.filter(function(p){return T[p.id]||(g.mins&&g.mins[p.id]);}).map(function(p){var x=T[p.id]||blank();return [p.num,p.name,Math.round(((g.mins&&g.mins[p.id])||0)/1000),x.pts,x.fgm,x.fga,x.tpm,x.tpa,x.ftm,x.fta,x.orb,x.drb,x.ast,x.stl,x.blk,x.to,x.pf,x.pm];}),
   of:oppFoulCounts(g.events),tf:cnt(g.events,'PF'),tt:cnt(g.events,'TOUT'),ofc:cnt(g.events,'OPF'),ot:cnt(g.events,'OTOUT')};
 }
 function encodeLink(key,obj){
@@ -831,24 +889,74 @@ function loadTeam2(id,k){
 }
 function viewerHtml(o,top){
  var st=document.documentElement.style;st.setProperty('--p',o.c[0]);st.setProperty('--accent2',o.c[1]);st.setProperty('--opp',o.c[2]);st.setProperty('--accent',uiAccent(o.c[0],o.c[1]));
- var P=o.p.map(function(a){return {num:a[0],name:a[1],sec:a[2],pts:a[3],fgm:a[4],fga:a[5],tpm:a[6],tpa:a[7],ftm:a[8],fta:a[9],orb:a[10],drb:a[11],ast:a[12],stl:a[13],blk:a[14],to:a[15],pf:a[16]};});
+ var P=o.p.map(function(a){return {num:a[0],name:a[1],sec:a[2],pts:a[3],fgm:a[4],fga:a[5],tpm:a[6],tpa:a[7],ftm:a[8],fta:a[9],orb:a[10],drb:a[11],ast:a[12],stl:a[13],blk:a[14],to:a[15],pf:a[16],pm:a[17]};});
  var t=P.reduce(function(acc,x){for(var k in x)if(typeof x[k]==='number')acc[k]=(acc[k]||0)+x[k];return acc;},{});
  var res=o.u>o.m?'WIN':o.u<o.m?'LOSS':'TIE';
  var tops=P.slice().sort(function(a,b){return (b.pts-a.pts)||((b.orb+b.drb+b.ast)-(a.orb+a.drb+a.ast));}).slice(0,3);
  var line=function(x){var b=[];if(x.orb+x.drb)b.push((x.orb+x.drb)+' reb');if(x.ast)b.push(x.ast+' ast');if(x.stl)b.push(x.stl+' stl');return b.slice(0,2).join(' · ')||'&nbsp;';};
- var rows=P.map(function(x){return '<tr><td class="nm"><b>'+esc(x.num)+'</b>'+esc(x.name)+'</td><td>'+(x.sec?Math.floor(x.sec/60)+':'+pad2(x.sec%60):'–')+'</td><td class="pts">'+x.pts+'</td><td>'+x.fgm+'-'+x.fga+'</td><td>'+x.tpm+'-'+x.tpa+'</td><td>'+x.ftm+'-'+x.fta+'</td><td>'+(x.orb+x.drb)+'</td><td>'+x.ast+'</td><td>'+x.stl+'</td><td>'+x.blk+'</td><td>'+x.to+'</td><td>'+x.pf+'</td></tr>';}).join('');
+ var rows=P.map(function(x){return '<tr><td class="nm"><b>'+esc(x.num)+'</b>'+esc(x.name)+'</td><td>'+(x.sec?Math.floor(x.sec/60)+':'+pad2(x.sec%60):'–')+'</td><td class="pts">'+x.pts+'</td><td>'+x.fgm+'-'+x.fga+'</td><td>'+x.tpm+'-'+x.tpa+'</td><td>'+x.ftm+'-'+x.fta+'</td><td>'+(x.orb+x.drb)+'</td><td>'+x.ast+'</td><td>'+x.stl+'</td><td>'+x.blk+'</td><td>'+x.to+'</td><td>'+x.pf+'</td><td>'+(x.pm==null?'–':fmtPm(x.pm))+'</td></tr>';}).join('');
  var ofk=Object.keys(o.of||{}).sort(function(a,b){return (+a)-(+b);});
  return '<div class="viewer">'+
   '<div class="vbrand"><span>🏀 TEAM STATS</span><button data-act="vw-app">Keep your own stats →</button></div>'+(top||'')+
   '<div class="vsb"><div class="st">'+(o.f?'Final · '+esc(niceDate(o.d)):(o.live?'<span class="vlive">LIVE</span> · '+esc(o.per||'')+(o.ck!=null?'<span class="vck" id="vclk">'+fmt(viewerClock(o))+'</span>':''):'In progress · '+esc(niceDate(o.d))))+'</div><div class="row"><div><div class="tn">'+esc(o.t)+'</div><div class="vbig'+(o.u<o.m?' dim':'')+'">'+o.u+'</div></div><div class="dash">–</div><div><div class="tn">'+esc(o.o)+'</div><div class="vbig'+(o.m<o.u?' dim':'')+'">'+o.m+'</div></div></div>'+(o.f?'<span class="res">'+res+'</span>':'')+'</div>'+
   (tops.length&&tops[0].pts?'<div class="hlbl">TOP PERFORMERS</div><div class="tops">'+tops.map(function(x){return '<div class="topc"><span class="jz">'+jersey(x.num,o.c[0],o.c[1])+'</span><b>'+esc(x.name)+'</b><div class="pp">'+x.pts+'<span style="font-size:13px"> PTS</span></div><small>'+line(x)+'</small></div>';}).join('')+'</div>':'')+
   (o.pl&&o.pl.length&&!o.f?'<div class="hlbl">RECENT PLAYS</div><div class="vcard plays">'+o.pl.map(function(x){return '<div><span>'+esc(x[0])+'</span>'+esc(x[1])+'</div>';}).join('')+'</div>':'')+
-  '<div class="hlbl">BOX SCORE</div><div class="vcard"><div class="tw" style="margin:0 -14px;padding:0 14px"><table class="box"><thead><tr><th class="nm">PLAYER</th><th>MIN</th><th>PTS</th><th>FG</th><th>3PT</th><th>FT</th><th>REB</th><th>AST</th><th>STL</th><th>BLK</th><th>TO</th><th>PF</th></tr></thead><tbody>'+rows+'</tbody>'+
-  '<tfoot><tr><td class="nm">Team</td><td></td><td class="pts">'+(t.pts||0)+'</td><td>'+(t.fgm||0)+'-'+(t.fga||0)+'</td><td>'+(t.tpm||0)+'-'+(t.tpa||0)+'</td><td>'+(t.ftm||0)+'-'+(t.fta||0)+'</td><td>'+((t.orb||0)+(t.drb||0))+'</td><td>'+(t.ast||0)+'</td><td>'+(t.stl||0)+'</td><td>'+(t.blk||0)+'</td><td>'+(t.to||0)+'</td><td>'+(t.pf||0)+'</td></tr></tfoot></table></div></div>'+
+  '<div class="hlbl">BOX SCORE</div><div class="vcard"><div class="tw" style="margin:0 -14px;padding:0 14px"><table class="box"><thead><tr><th class="nm">PLAYER</th><th>MIN</th><th>PTS</th><th>FG</th><th>3PT</th><th>FT</th><th>REB</th><th>AST</th><th>STL</th><th>BLK</th><th>TO</th><th>PF</th><th>+/-</th></tr></thead><tbody>'+rows+'</tbody>'+
+  '<tfoot><tr><td class="nm">Team</td><td></td><td class="pts">'+(t.pts||0)+'</td><td>'+(t.fgm||0)+'-'+(t.fga||0)+'</td><td>'+(t.tpm||0)+'-'+(t.tpa||0)+'</td><td>'+(t.ftm||0)+'-'+(t.fta||0)+'</td><td>'+((t.orb||0)+(t.drb||0))+'</td><td>'+(t.ast||0)+'</td><td>'+(t.stl||0)+'</td><td>'+(t.blk||0)+'</td><td>'+(t.to||0)+'</td><td>'+(t.pf||0)+'</td><td></td></tr></tfoot></table></div></div>'+
   '<div class="kpis" style="margin-top:0"><div class="kpi"><b>'+pct(t.fgm||0,t.fga||0)+'</b><small>FG</small></div><div class="kpi"><b>'+pct(t.tpm||0,t.tpa||0)+'</b><small>3PT</small></div><div class="kpi"><b>'+pct(t.ftm||0,t.fta||0)+'</b><small>FT</small></div></div>'+
   '<div class="vcard" style="font-size:14px"><b>'+esc(o.t)+'</b> · Fouls '+o.tf+' · Timeouts '+o.tt+'<div style="height:6px"></div><b>'+esc(o.o)+'</b> · Fouls '+o.ofc+' · Timeouts '+o.ot+(ofk.length?'<div class="qn" style="margin-top:8px">'+ofk.map(function(k){return '<span class="c">#'+esc(k)+'<em>'+o.of[k]+'</em></span>';}).join('')+'</div>':'')+'</div>'+
   '<div class="btns" style="margin-top:0"><button class="btn sec" data-act="vw-copy">Copy link</button><button class="btn" data-act="vw-app">Open Team Stats</button></div>'+
   '<div class="vfoot">'+(o.live&&!o.f?'Updates automatically while the game is on.':'Shared from Team Stats.')+' Keep stats for your own team free at Team Stats.</div>'+
+ '</div>';
+}
+/* ---------- orientation tour + help ---------- */
+var tourEl=null;
+function tourSlides(){
+ var c1=S.settings.accent,c2=S.settings.accent2;
+ var J=function(n,name,on){return '<div class="mj'+(on?' on':'')+'"><span class="jz">'+jersey(n,c1,c2)+'</span><span>'+name+'</span></div>';};
+ var slides=[
+  {h:'Welcome to Team Stats',p:'Keep stats for <b>your</b> team, fast enough to keep up with the game. Here\'s a 1-minute tour.',v:'<div style="text-align:center"><div style="font-size:64px;line-height:1">🏀</div><div class="mrow" style="margin-top:16px">'+J('3','Ava')+J('12','Mia')+J('24','Zoe')+'</div></div>'},
+  {h:'Tap a player, then a stat',p:'That\'s it: two taps. You can also tap the stat first and the player second. The player\'s jersey flashes so you know it counted.',v:'<div style="display:flex;flex-direction:column;align-items:center;gap:18px"><div class="mrow">'+J('3','Ava')+J('12','Mia',true)+J('24','Zoe')+'</div><div class="mbtn mk2" style="width:150px;height:64px;position:relative">+2<small>2-POINTER</small><span class="tap" style="left:50%;top:50%"></span></div></div><span class="tap d2" style="left:50%;top:26%"></span>'},
+  {h:'Every stat, one tap',p:'<b>Makes</b> are the big orange buttons with <b>misses</b> under them. Rebounds, assists, steals, blocks, turnovers and fouls are on the grid. A made 3 or an and-one gets a little celebration.',v:'<div style="display:flex;flex-direction:column;gap:8px;align-items:center"><div style="display:grid;grid-template-columns:repeat(3,76px);gap:7px"><div class="mbtn mk2" style="height:52px">+3</div><div class="mbtn mk2" style="height:52px">+2</div><div class="mbtn mk2" style="height:52px">+1</div><div class="mbtn ms2" style="height:34px">MISS 3</div><div class="mbtn ms2" style="height:34px">MISS 2</div><div class="mbtn ms2" style="height:34px">MISS FT</div></div><div class="mgrid"><div class="mbtn ac2" style="height:44px">OREB</div><div class="mbtn ac2" style="height:44px">AST</div><div class="mbtn ac2" style="height:44px">STL</div><div class="mbtn ac2" style="height:44px;color:var(--foul)">FOUL</div></div></div>'},
+  {h:'The other team',p:'Use <b>+1 / +2 / +3</b> under their score. For their fouls or timeouts, tap <b>FOUL</b> or <b>T/O</b>, then <b>OPP</b>, and punch in the jersey number. Team and player fouls are tracked for both sides.',v:'<div style="display:flex;flex-direction:column;align-items:center;gap:14px"><div style="display:flex;gap:6px"><span class="mpill">+1</span><span class="mpill">+2</span><span class="mpill">+3</span></div><div style="display:flex;gap:10px;align-items:center"><div class="mbtn ac2" style="width:80px;height:50px;color:var(--foul)">FOUL</div><span style="font-size:20px;color:var(--muted)">→</span><div class="mbtn" style="width:110px;height:50px;background:#2a2420;color:#fff;font-size:20px;position:relative">OPP<span class="tap" style="left:50%;top:50%"></span></div></div><div class="mck" style="font-size:28px;padding:6px 18px"># 23</div></div>'},
+  {h:'Clock & subs',p:'Tap the <b>clock</b> to start or stop it, or <b>Edit clock</b> to set the exact time. <b>Press and hold</b> any player to switch to sub mode. Minutes only count while the clock runs.',v:'<div style="display:flex;align-items:center;gap:22px"><div style="position:relative"><div class="mck">4:37<small>Q2 · LIVE</small></div><span class="tap" style="left:50%;top:50%"></span></div><div style="position:relative">'+J('12','hold',false).replace('class="mj"','class="mj" style="outline:2px dashed #b98a5e;border-radius:12px;padding:4px"')+'<span class="tap d2" style="left:50%;top:45%"></span></div></div>'},
+  {h:'Oops? Undo.',p:'<b>Undo</b> removes the last play. Tap the <b>play-by-play</b> at the bottom to see every play and delete any one of them.',v:'<div style="display:flex;flex-direction:column;align-items:center;gap:14px"><span class="mpill" style="position:relative">'+ICON.undo+'Undo<span class="tap" style="left:50%;top:50%"></span></span><div class="mplays"><div class="x"><span>+3 – #12 Mia</span><span>✕</span></div><div><span>Steal – #3 Ava</span><span>Q2</span></div><div><span>+2 – #24 Zoe</span><span>Q2</span></div></div></div>'},
+  {h:'Share it live',p:'<b>Share team</b> gives you a <b>Viewer link</b> so family can watch the score and stats live, and a <b>Contributor link</b> so a co-coach can keep stats with you from their phone.',v:'<div style="width:250px;text-align:center"><div style="font-size:11px;font-weight:700;letter-spacing:1.3px;color:#ff4d3d">● LIVE · Q3 <span class="vck">2:14</span></div><div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;margin-top:8px"><div><div class="muted" style="font:700 13px var(--cond);letter-spacing:1px">US</div><div style="font:800 46px/1 var(--cond)">31</div></div><div style="color:var(--line2);font:800 24px var(--cond)">–</div><div><div class="muted" style="font:700 13px var(--cond);letter-spacing:1px">OPP</div><div style="font:800 46px/1 var(--cond);color:#a99b8e">24</div></div></div><div style="display:flex;gap:6px;justify-content:center;margin-top:12px"><span class="mpill">👀 Viewer</span><span class="mpill">✏️ Contributor</span></div></div>'},
+  {h:'After the game',p:'<b>End &amp; save</b> gives you the final box score to send by text or link. Every saved game builds your <b>season stats</b>. Juggling several teams? Add them on Home and switch with a tap.',v:'<div style="display:flex;flex-direction:column;align-items:center;gap:10px"><div style="font:700 12px Inter;letter-spacing:1.3px;color:var(--muted)">FINAL</div><div style="font:800 44px/1 var(--cond)">39 – 30</div><span style="background:var(--ink);color:#fff;font:700 12px var(--cond);letter-spacing:1.5px;padding:4px 12px;border-radius:999px">WIN</span><div style="display:flex;gap:8px;margin-top:6px"><span class="mpill">Share link</span><span class="mpill">Season stats</span></div></div>'}
+ ];
+ return slides;
+}
+function openTour(){
+ closeTour();var sl=tourSlides(),n=sl.length,last=!S.roster.length?'Set up my team':'Let\'s go';
+ tourEl=document.createElement('div');tourEl.className='tour';
+ tourEl.innerHTML='<div class="thead"><span>🏀 TEAM STATS</span><button data-tour="skip">Skip</button></div><div class="tslides" id="tsl">'+sl.map(function(x){return '<div class="tslide"><div class="tvis">'+x.v+'</div><h2>'+x.h+'</h2><p>'+x.p+'</p></div>';}).join('')+'</div><div class="tfoot"><button class="tback" data-tour="back" style="visibility:hidden">Back</button><div class="tdots">'+sl.map(function(_,i){return '<i'+(i?'':' class="on"')+'></i>';}).join('')+'</div><button class="btn" data-tour="next">Next</button></div>';
+ document.body.appendChild(tourEl);
+ var box=tourEl.querySelector('#tsl'),idx=0;
+ var upd=function(){idx=Math.round(box.scrollLeft/box.clientWidth);tourEl.querySelectorAll('.tdots i').forEach(function(d,i){d.classList.toggle('on',i===idx);});tourEl.querySelector('[data-tour="back"]').style.visibility=idx?'visible':'hidden';tourEl.querySelector('[data-tour="next"]').textContent=idx===n-1?last:'Next';};
+ box.addEventListener('scroll',function(){clearTimeout(box._t);box._t=setTimeout(upd,60);});
+ tourEl.addEventListener('click',function(e){var b=e.target.closest('[data-tour]');if(!b)return;var a=b.dataset.tour;
+  if(a==='skip'){finishTour(false);}
+  else if(a==='next'){if(idx>=n-1)finishTour(true);else box.scrollTo({left:(idx+1)*box.clientWidth,behavior:'smooth'});}
+  else if(a==='back'){box.scrollTo({left:Math.max(0,idx-1)*box.clientWidth,behavior:'smooth'});}
+ });
+ window.addEventListener('resize',function(){if(tourEl)box.scrollLeft=idx*box.clientWidth;});
+}
+function closeTour(){if(tourEl){tourEl.remove();tourEl=null;}}
+function finishTour(done){var empty=!S.roster.length;closeTour();if(!DB.seenTour){DB.seenTour=1;save();}if(done&&empty&&!shared){go('home');openTeam();}}
+function helpSheet(){
+ var q=function(t,a){return '<details><summary>'+t+'</summary><div class="a">'+a+'</div></details>';};
+ return head('Help')+'<button class="btn big" data-act="tour" style="margin-bottom:14px">▶ Replay the tour</button><div class="helpq">'+
+  q('Keeping stats','Tap a <b>player</b>, then a <b>stat</b>, or the stat first, then the player. Orange buttons are makes; the buttons under them are misses. The tiles under each jersey show points and a 5-dot foul meter.')+
+  q('The other team','Tap <b>+1 / +2 / +3</b> under their score. For their fouls or timeouts, tap <b>FOUL</b> or <b>T/O</b>, then the <b>OPP</b> button and enter the jersey number. Tap <b>OPP</b> at the top to set their name, color and the game date.')+
+  q('Team fouls & timeouts','Tap <b>FOUL</b> or <b>T/O</b>, then the <b>team</b> button (your team name) for a bench/technical foul or your own timeout. Team fouls reset each period.')+
+  q('Clock & periods','Tap the clock to start or stop. <b>Edit clock</b> lets you type the time or slide left/right to adjust, change the period, or jump to the next period (overtime included).')+
+  q('Subs & minutes','Tap <b>Subs</b> (or press and hold any player), then tap players to move them on or off the court. Minutes are tracked only while the clock runs.')+
+  q('Fixing mistakes','<b>Undo</b> removes the last play. Tap the <b>play-by-play</b> at the bottom of the game screen to delete any play.')+
+  q('Ending a game','On Home tap <b>End &amp; save game</b> (or use the Stats screen). You\'ll get the final box score with Share, Text, Email and CSV options. It then shows in <b>Past games</b> and <b>Season stats</b>.')+
+  q('Sharing & live viewing','<b>Share team</b> on Home gives two links. <b>Viewer</b>: anyone can follow live games, box scores and season stats, read-only. <b>Contributor</b>: a co-coach joins and can keep stats and edit the roster; everything syncs. Only share contributor links with people you trust.')+
+  q('Multiple teams','Add teams with the <b>+ Add team</b> card on Home. Tap a card to switch; press and hold, then drag to reorder. Each team keeps its own roster, colors, games and stats. <b>Manage</b> lets you delete a team.')+
+  q('Installing & offline','Open the app link in Safari (iPhone: Share → Add to Home Screen) or Chrome (Android: ⋮ → Install app). It works offline in the gym and syncs shared teams when you\'re back online.')+
+  q('Moving to a new phone','Shared teams: open your contributor link on the new phone and join. Unshared teams: use <b>Back up / restore</b> at the bottom of the Share sheet.')+
  '</div>';
 }
 /* ---------- main render ---------- */
@@ -1053,7 +1161,7 @@ function applyGame(){
  L.date=dt.value||today();L.mAt=Date.now();gameDirty=true;save();render();
 }
 function liveEdit(){clearTimeout(liveT);liveT=setTimeout(function(){if(sheetFn===teamSheet){syncTD();applyTD();}else if(sheetFn===gameSheet)applyGame();},120);}
-ov.addEventListener('input',function(e){if(e.target.closest('#rr')||/^(t|g)-/.test(e.target.id||''))liveEdit();});
+ov.addEventListener('input',function(e){if(e.target.id==='ed-num'){var e4=editedEv();if(e4){e4.num=e.target.value.replace(/\D/g,'').slice(0,2);save();render();}return;}if(e.target.closest('#rr')||/^(t|g)-/.test(e.target.id||''))liveEdit();});
 ov.addEventListener('change',function(e){if(/^(t|g)-/.test(e.target.id||''))liveEdit();});
 /* team + roster editor (works from a draft TD) */
 function openTeam(){
@@ -1157,10 +1265,31 @@ ov.addEventListener('change',function(e){
  if(e.target.id!=='bk-file'||!e.target.files||!e.target.files[0])return;
  var r=new FileReader();r.onload=function(){tryRestore(String(r.result||''));};r.onerror=function(){toast('Couldn\'t read that file');};r.readAsText(e.target.files[0]);
 });
+var editId=null;
+var ETYPES=[['3M','+3'],['2M','+2'],['FTM','+FT'],['3X','Miss 3'],['2X','Miss 2'],['FTX','Miss FT'],['ORB','OREB'],['DRB','DREB'],['AST','AST'],['STL','STL'],['BLK','BLK'],['TO','TO'],['PF','Foul'],['TOUT','Timeout']];
+function editSheet(){
+ var e=L.events.filter(function(x){return x.id===editId;})[0];
+ if(!e)return head('Edit play')+'<p class="muted">That play was removed.</p><div class="btns"><button class="btn" data-act="log">Back</button></div>';
+ var h=head('Edit play')+'<p class="muted" style="margin:-6px 0 12px">'+perShort(e.per)+' '+fmt(e.clk*1000)+' · '+esc(evText(e))+'</p>';
+ if(e.type==='OPP'){
+  h+='<div class="sec-lbl">OPPONENT POINTS</div><div class="chips">'+[1,2,3].map(function(v){return '<button class="'+(e.v===v?'on':'')+'" data-act="ed-oppv" data-v="'+v+'">+'+v+'</button>';}).join('')+'</div>';
+ }else if(e.type==='OPF'){
+  h+='<div class="sec-lbl">OPPONENT JERSEY #</div><label class="fld" style="margin:0"><input id="ed-num" inputmode="numeric" maxlength="2" value="'+esc(e.num||'')+'" placeholder="No number"></label>';
+ }else if(e.type==='OTOUT'){
+  h+='<p class="muted">Opponent timeout.</p>';
+ }else{
+  var teamOk=(e.type==='PF'||e.type==='TOUT');
+  h+='<div class="sec-lbl">PLAYER</div><div class="chips">'+sortRoster(S.roster).map(function(p){return '<button class="'+(e.pid===p.id?'on':'')+'" data-act="ed-pid" data-v="'+p.id+'"'+(e.type==='TOUT'?' disabled':'')+'><b>'+esc(p.num)+'</b>'+esc(p.name)+'</button>';}).join('')+'<button class="'+(!e.pid?'on':'')+'" data-act="ed-pid" data-v=""'+(teamOk?'':' disabled')+'>Team</button></div>'+
+   '<div class="sec-lbl">STAT</div><div class="chips">'+ETYPES.map(function(t){return '<button class="'+(e.type===t[0]?'on':'')+'" data-act="ed-type" data-v="'+t[0]+'">'+t[1]+'</button>';}).join('')+'</div>';
+  if(!e.pid&&!teamOk)h+='<p class="muted" style="color:var(--miss)">Pick a player for this stat.</p>';
+ }
+ return h+'<div class="btns"><button class="btn sec" style="color:var(--miss)" data-act="ed-del">Delete play</button><button class="btn" data-act="log">Done</button></div>';
+}
+function editedEv(){var e=L.events.filter(function(x){return x.id===editId;})[0];if(e){e.et=Date.now();}return e;}
 function logSheet(){
  var ev=L.events.slice().reverse();
  return head('Play-by-play')+(ev.length?ev.map(function(e){
-  return '<div class="lrow"><span class="tm2">'+perShort(e.per)+' '+fmt(e.clk*1000)+'</span><span class="tx">'+esc(evText(e))+'</span><button data-act="logdel" data-id="'+e.id+'">✕</button></div>';}).join(''):'<p class="muted">Nothing recorded yet.</p>');
+  return '<div class="lrow"><button class="lmain" data-act="logedit" data-id="'+e.id+'"><span class="tm2">'+perShort(e.per)+' '+fmt(e.clk*1000)+'</span><span class="tx">'+esc(evText(e))+'</span></button><button data-act="logdel" data-id="'+e.id+'" aria-label="Delete play">✕</button></div>';}).join('')+'<p class="muted" style="margin-top:10px">Tap a play to edit it.</p>':'<p class="muted">Nothing recorded yet.</p>');
 }
 
 /* box score */
@@ -1176,9 +1305,9 @@ function oppSection(g){
 function boxTable(g){
  var T=tally(g.events),r=sortRoster(g.roster),t=totals(T,r);
  var rows=r.map(function(p){var s=T[p.id]||blank(),mn=g.mins[p.id]||0;
-  return '<tr><td class="nm"><b>'+esc(p.num)+'</b>'+esc(p.name)+'</td><td>'+fmtMin(mn)+'</td><td class="pts">'+s.pts+'</td><td>'+s.fgm+'-'+s.fga+'</td><td>'+s.tpm+'-'+s.tpa+'</td><td>'+s.ftm+'-'+s.fta+'</td><td>'+s.orb+'</td><td>'+s.drb+'</td><td>'+(s.orb+s.drb)+'</td><td>'+s.ast+'</td><td>'+s.stl+'</td><td>'+s.blk+'</td><td>'+s.to+'</td><td>'+s.pf+'</td></tr>';}).join('');
- return '<div class="tw"><table class="box"><thead><tr><th class="nm">PLAYER</th><th>MIN</th><th>PTS</th><th>FG</th><th>3PT</th><th>FT</th><th>OR</th><th>DR</th><th>REB</th><th>AST</th><th>STL</th><th>BLK</th><th>TO</th><th>PF</th></tr></thead><tbody>'+rows+'</tbody>'+
- '<tfoot><tr><td class="nm">Team</td><td></td><td class="pts">'+t.pts+'</td><td>'+t.fgm+'-'+t.fga+'</td><td>'+t.tpm+'-'+t.tpa+'</td><td>'+t.ftm+'-'+t.fta+'</td><td>'+t.orb+'</td><td>'+t.drb+'</td><td>'+(t.orb+t.drb)+'</td><td>'+t.ast+'</td><td>'+t.stl+'</td><td>'+t.blk+'</td><td>'+t.to+'</td><td>'+t.pf+'</td></tr></tfoot></table></div>'+
+  return '<tr><td class="nm"><b>'+esc(p.num)+'</b>'+esc(p.name)+'</td><td>'+fmtMin(mn)+'</td><td class="pts">'+s.pts+'</td><td>'+s.fgm+'-'+s.fga+'</td><td>'+s.tpm+'-'+s.tpa+'</td><td>'+s.ftm+'-'+s.fta+'</td><td>'+s.orb+'</td><td>'+s.drb+'</td><td>'+(s.orb+s.drb)+'</td><td>'+s.ast+'</td><td>'+s.stl+'</td><td>'+s.blk+'</td><td>'+s.to+'</td><td>'+s.pf+'</td><td>'+fmtPm(s.pm)+'</td></tr>';}).join('');
+ return '<div class="tw"><table class="box"><thead><tr><th class="nm">PLAYER</th><th>MIN</th><th>PTS</th><th>FG</th><th>3PT</th><th>FT</th><th>OR</th><th>DR</th><th>REB</th><th>AST</th><th>STL</th><th>BLK</th><th>TO</th><th>PF</th><th>+/-</th></tr></thead><tbody>'+rows+'</tbody>'+
+ '<tfoot><tr><td class="nm">Team</td><td></td><td class="pts">'+t.pts+'</td><td>'+t.fgm+'-'+t.fga+'</td><td>'+t.tpm+'-'+t.tpa+'</td><td>'+t.ftm+'-'+t.fta+'</td><td>'+t.orb+'</td><td>'+t.drb+'</td><td>'+(t.orb+t.drb)+'</td><td>'+t.ast+'</td><td>'+t.stl+'</td><td>'+t.blk+'</td><td>'+t.to+'</td><td>'+t.pf+'</td><td></td></tr></tfoot></table></div>'+
  '<div class="kpis"><div class="kpi"><b>'+pct(t.fgm,t.fga)+'</b><small>FG</small></div><div class="kpi"><b>'+pct(t.tpm,t.tpa)+'</b><small>3PT</small></div><div class="kpi"><b>'+pct(t.ftm,t.fta)+'</b><small>FT</small></div></div>';
 }
 function niceDate(d){try{var x=new Date(d+'T12:00:00');return x.toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'});}catch(e){return d;}}
@@ -1193,7 +1322,7 @@ function boxText(g){
   var bits=[s.pts+' pts'];
   if(s.orb+s.drb)bits.push((s.orb+s.drb)+' reb');if(s.ast)bits.push(s.ast+' ast');if(s.stl)bits.push(s.stl+' stl');if(s.blk)bits.push(s.blk+' blk');
   if(s.fga)bits.push(s.fgm+'-'+s.fga+' FG');if(s.tpa)bits.push(s.tpm+'-'+s.tpa+' 3PT');if(s.fta)bits.push(s.ftm+'-'+s.fta+' FT');
-  if(s.to)bits.push(s.to+' TO');if(s.pf)bits.push(s.pf+' PF');if(g.mins[p.id])bits.push(fmtMin(g.mins[p.id])+' min');
+  if(s.to)bits.push(s.to+' TO');if(s.pf)bits.push(s.pf+' PF');if(s.pm)bits.push(fmtPm(s.pm)+' +/-');if(g.mins[p.id])bits.push(fmtMin(g.mins[p.id])+' min');
   out.push('#'+p.num+' '+p.name+' — '+bits.join(' · '));});
  var m=oppFoulCounts(g.events);
  out.push('','Fouls: '+g.team+' '+cnt(g.events,'PF')+' · '+g.opp+' '+cnt(g.events,'OPF')+(Object.keys(m).length?' ('+Object.keys(m).map(function(k){return '#'+k+'×'+m[k];}).join(', ')+')':''));
@@ -1203,8 +1332,8 @@ function boxText(g){
 function boxCsv(g){
  var T=tally(g.events),r=sortRoster(g.roster);
  var q=function(v){v=String(v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;};
- var lines=['Number,Player,MIN,PTS,FGM,FGA,3PM,3PA,FTM,FTA,OREB,DREB,REB,AST,STL,BLK,TO,PF'];
- r.forEach(function(p){var s=T[p.id]||blank();lines.push([p.num,p.name,fmtMin(g.mins[p.id]||0),s.pts,s.fgm,s.fga,s.tpm,s.tpa,s.ftm,s.fta,s.orb,s.drb,s.orb+s.drb,s.ast,s.stl,s.blk,s.to,s.pf].map(q).join(','));});
+ var lines=['Number,Player,MIN,PTS,FGM,FGA,3PM,3PA,FTM,FTA,OREB,DREB,REB,AST,STL,BLK,TO,PF,PLUS_MINUS'];
+ r.forEach(function(p){var s=T[p.id]||blank();lines.push([p.num,p.name,fmtMin(g.mins[p.id]||0),s.pts,s.fgm,s.fga,s.tpm,s.tpa,s.ftm,s.fta,s.orb,s.drb,s.orb+s.drb,s.ast,s.stl,s.blk,s.to,s.pf,s.pm].map(q).join(','));});
  return lines.join('\n');
 }
 var linkShown=null,viewGame=null,copyFallback=false,finalMode=false,finalPersist=false;
@@ -1287,10 +1416,17 @@ document.addEventListener('click',function(e){
  case 'sub':subMode=!subMode;sel=null;pending=null;render();break;
  case 'menu':case 'home':go('home');break;
  case 'resume':go('game');break;
+ case 'help':openSheet(helpSheet);break;
+ case 'tour':closeSheet();setTimeout(openTour,180);break;
  case 'season':linkShown=null;openSheet(seasonSheet);break;
  case 'newgame':startMode=true;L.date=today();save();openSheet(gameSheet);break;
  case 'box':viewGame=null;finalMode=false;copyFallback=false;linkShown=null;openSheet(boxSheet);break;
- case 'log':openSheet(logSheet);break;
+ case 'log':editId=null;openSheet(logSheet);break;
+ case 'logedit':editId=d.id;openSheet(editSheet);break;
+ case 'ed-pid':var e1=editedEv();if(e1){e1.pid=d.v||null;if(e1.pid&&PTS[e1.type]&&!e1.on)e1.on=L.onCourt.slice();save();refreshSheet();render();}break;
+ case 'ed-type':var e2=editedEv();if(e2){e2.type=d.v;if(d.v==='TOUT')e2.pid=null;if(PTS[d.v]&&e2.pid&&!e2.on)e2.on=L.onCourt.slice();save();refreshSheet();render();}break;
+ case 'ed-oppv':var e3=editedEv();if(e3){e3.v=+d.v;save();refreshSheet();render();}break;
+ case 'ed-del':if(editId){S.tomb.ev.push(editId);var did2=editId;L.events=L.events.filter(function(x){return x.id!==did2;});save();toast('Play deleted');openSheet(logSheet);render();}break;
  case 'logdel':S.tomb.ev.push(d.id);L.events=L.events.filter(function(x){return x.id!==d.id;});save();refreshSheet();render();break;
  case 'close':closeSheet();break;
  case 'game':openSheet(gameSheet);break;
@@ -1417,5 +1553,6 @@ if(qt&&/^[A-Za-z0-9]{6,16}$/.test(qt)){shared={kind:'loading'};loadTeam2(qt,qk&&
 else if(qg&&/^[A-Za-z0-9]{6,16}$/.test(qg)){shared={kind:'loading'};loadShare(qg,'s');}
 else if(/^#[st]=/.test(location.hash)){readLink(location.hash).then(function(o){if(o){shared=o;render();}else{toast('That link looks incomplete');}});}
 render();
+if(!DB.seenTour&&!shared&&!/^#[st]=/.test(location.hash))setTimeout(openTour,350);
 })();
 </script></body></html>

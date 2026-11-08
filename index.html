@@ -437,6 +437,27 @@ html,body{height:100%;overflow:hidden}
 .bk textarea{width:100%;height:110px;font-size:12px;border:1px solid var(--line2);border-radius:11px;padding:10px;background:#fff;color:var(--text)}
 .filebtn{position:relative;overflow:hidden}
 .filebtn input{position:absolute;inset:0;opacity:0;cursor:pointer}
+/* ---- raised button style (all game buttons) ---- */
+.mk{box-shadow:0 5px 0 #a5400b,0 9px 16px rgba(170,70,15,.30),inset 0 1px 0 rgba(255,255,255,.45);transform:translateY(-1px)}
+.ac,.ms,.tg,.tb,.oppb{background:linear-gradient(180deg,#ffffff 0%,#fbf6f0 55%,#f3e9de 100%);border:1px solid #e5d6c6;box-shadow:0 4px 0 #d9c6b2,0 7px 14px rgba(90,50,20,.10),inset 0 1px 0 #fff;transition:transform .07s,box-shadow .07s,filter .07s}
+.ms{border-color:#ecd2c6;box-shadow:0 4px 0 #e6c3b5,0 7px 14px rgba(160,60,30,.08),inset 0 1px 0 #fff}
+.ac.ghost{background:linear-gradient(180deg,#fbf8f4 0%,#f1e9df 100%);border:1px solid #e0d2c3;border-style:solid}
+.ac.ghost span{color:#6d6157}
+.tg.opp{background:linear-gradient(180deg,color-mix(in srgb,var(--opp) 78%,#fff) 0%,var(--opp) 60%,color-mix(in srgb,var(--opp) 88%,#000) 100%);border-color:color-mix(in srgb,var(--opp) 80%,#000);box-shadow:0 4px 0 color-mix(in srgb,var(--opp) 60%,#000),0 7px 14px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.25)}
+.tb,.oppb{box-shadow:0 3px 0 #d9c6b2,0 5px 10px rgba(90,50,20,.08),inset 0 1px 0 #fff}
+.mk:active{transform:translateY(4px);box-shadow:0 1px 0 #a5400b,0 2px 6px rgba(170,70,15,.25),inset 0 1px 0 rgba(255,255,255,.35);filter:brightness(.95)}
+.ac:active,.ms:active,.tg:active{transform:translateY(3px);box-shadow:0 1px 0 #d9c6b2,0 2px 5px rgba(90,50,20,.10),inset 0 1px 0 #fff;background:linear-gradient(180deg,#f8f1e9 0%,#efe4d7 100%)}
+.ms:active{box-shadow:0 1px 0 #e6c3b5,0 2px 5px rgba(160,60,30,.08)}
+.tg.opp:active{transform:translateY(3px);box-shadow:0 1px 0 color-mix(in srgb,var(--opp) 60%,#000),0 2px 5px rgba(0,0,0,.18);background:var(--opp)}
+.tb:active,.oppb:active{transform:translateY(2px);box-shadow:0 1px 0 #d9c6b2,0 2px 4px rgba(90,50,20,.08)}
+.tg.sel{box-shadow:0 4px 0 #d9c6b2,0 0 0 2.5px var(--accent),0 10px 22px color-mix(in srgb,var(--accent) 30%,transparent)}
+.tg.opp.sel{box-shadow:0 4px 0 color-mix(in srgb,var(--opp) 60%,#000),0 0 0 2.5px var(--accent),0 10px 22px color-mix(in srgb,var(--accent) 30%,transparent)}
+.pending{outline:3px solid var(--ink);outline-offset:3px}
+.shots{gap:9px 8px}.acts{gap:11px 8px}.targets{gap:8px;padding-bottom:4px}
+.pad{gap:11px}
+.mbtn.mk2{box-shadow:0 4px 0 #a5400b,0 7px 12px rgba(170,70,15,.28)}
+.mbtn.ac2,.mbtn.ms2{background:linear-gradient(180deg,#fff,#f3e9de);box-shadow:0 3px 0 #d9c6b2,0 5px 10px rgba(90,50,20,.08)}
+.mbtn.ms2{box-shadow:0 3px 0 #e6c3b5}
 </style></head><body><div id="root"></div><script type="application/json" id="saved">{"teams":[{"id":"t1","team":"My Team","abbr":"US","roster":[],"games":[],"settings":{"periodMin":8,"periods":4,"v3":1}}],"cur":"t1","rev":0}</script><script id="app">
 (function(){
 'use strict';

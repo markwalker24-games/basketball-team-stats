@@ -488,6 +488,9 @@ html,body{height:100%;overflow:hidden}
 .ckrow .ckedit svg{width:14px;height:14px}
 .vsb .dash.arrow{color:var(--accent);font-size:34px}
 .ck{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+html{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+input,textarea,select,[contenteditable]{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
+.viewer .box,.viewer .plays{-webkit-user-select:text;user-select:text}
 </style></head><body><div id="root"></div><script type="application/json" id="saved">{"teams":[{"id":"t1","team":"My Team","abbr":"US","roster":[],"games":[],"settings":{"periodMin":8,"periods":4,"v3":1}}],"cur":"t1","rev":0}</script><script id="app">
 (function(){
 'use strict';
@@ -1127,10 +1130,12 @@ function render(){
 }
 
 /* ---------- press and hold the clock to edit ---------- */
-var ckT=null,ckFired=false,ckX=0,ckY=0;
-root.addEventListener('pointerdown',function(e){var c=e.target.closest('.ck');ckFired=false;clearTimeout(ckT);if(!c)return;ckX=e.clientX;ckY=e.clientY;ckT=setTimeout(function(){ckFired=true;buzz(25);c.classList.remove('down');openClock();},450);});
-root.addEventListener('pointermove',function(e){if(ckT&&(Math.abs(e.clientX-ckX)>10||Math.abs(e.clientY-ckY)>10))clearTimeout(ckT);});
-['pointerup','pointercancel'].forEach(function(n){root.addEventListener(n,function(){clearTimeout(ckT);});});
+var ckT=null,ckFired=false,ckX=0,ckY=0,ckDown=false,ckMoved=false;
+root.addEventListener('pointerdown',function(e){var c=e.target.closest('.ck');ckFired=false;ckMoved=false;clearTimeout(ckT);ckDown=!!c;if(!c)return;ckX=e.clientX;ckY=e.clientY;ckT=setTimeout(function(){ckFired=true;ckDown=false;buzz(25);c.classList.remove('down');openClock();},450);});
+root.addEventListener('pointermove',function(e){if(ckDown&&(Math.abs(e.clientX-ckX)>14||Math.abs(e.clientY-ckY)>14)){ckMoved=true;clearTimeout(ckT);}});
+root.addEventListener('pointerup',function(e){clearTimeout(ckT);if(!ckDown)return;ckDown=false;if(ckFired||ckMoved)return;
+ if(L.running)stopClock();else startClock();buzz(8);var el=root.querySelector('.ck');if(el)playTap(el);});
+root.addEventListener('pointercancel',function(){clearTimeout(ckT);ckDown=false;});
 root.addEventListener('contextmenu',function(e){if(e.target.closest('.ck'))e.preventDefault();});
 /* ---------- drag team cards to reorder (home) ---------- */
 var tdrag=null,tdragT=null,tdragSuppress=false;
@@ -1463,7 +1468,7 @@ function historySheet(){
 }
 
 /* ---------- app updates (installed app) ---------- */
-var APP_VERSION='20261107211540';
+var APP_VERSION='20261107211950';
 function showUpdate(){if(document.getElementById('upd'))return;var b=document.createElement('button');b.id='upd';b.className='upd';b.innerHTML='✨ New version ready · <b>Tap to update</b>';b.onclick=function(){save();location.reload();};document.body.appendChild(b);}
 function checkUpdate(){if(inFrame||APP_VERSION==='dev'||!navigator.onLine)return;fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(j){if(j&&j.v&&j.v!==APP_VERSION)showUpdate();}).catch(function(){});}
 setTimeout(checkUpdate,4000);setInterval(checkUpdate,180000);
@@ -1481,7 +1486,7 @@ document.addEventListener('click',function(e){
  playTap(t);
  if(a==='player'&&lpFired){lpFired=false;return;}
  if(a==='team-pick'&&tdragSuppress)return;
- if(a==='clock'&&ckFired){ckFired=false;return;}
+ if(a==='clock'&&t.classList.contains('ck'))return;
  switch(a){
  case 'player':
   if(subMode){var i=L.onCourt.indexOf(d.id);if(i>=0)L.onCourt.splice(i,1);else L.onCourt.push(d.id);L.oAt=Date.now();save();render();}

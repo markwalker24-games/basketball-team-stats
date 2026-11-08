@@ -528,6 +528,8 @@ input,textarea,select,[contenteditable]{-webkit-user-select:text;user-select:tex
 .fchip.hot{border-color:var(--foul)}
 .fchip.out{background:var(--miss);border-color:var(--miss);color:#fff}
 .fchip.out b{color:#fff}
+.sbig{background:none;border:0;padding:0 10px;border-radius:14px;color:var(--text);cursor:pointer}
+.sbig:active{background:var(--surface2)}
 </style></head><body><div id="root"></div><script type="application/json" id="saved">{"teams":[{"id":"t1","team":"My Team","abbr":"US","roster":[],"games":[],"settings":{"periodMin":8,"periods":4,"v3":1}}],"cur":"t1","rev":0}</script><script id="app">
 (function(){
 'use strict';
@@ -744,7 +746,7 @@ function tally(ev){var m={};ev.forEach(function(e){if(!e.pid)return;var s=m[e.pi
  switch(e.type){case '3M':s.tpm++;s.tpa++;s.fgm++;s.fga++;s.pts+=3;break;case '3X':s.tpa++;s.fga++;break;
  case '2M':s.fgm++;s.fga++;s.pts+=2;break;case '2X':s.fga++;break;case 'FTM':s.ftm++;s.fta++;s.pts++;break;case 'FTX':s.fta++;break;
  case 'ORB':s.orb++;break;case 'DRB':s.drb++;break;case 'AST':s.ast++;break;case 'STL':s.stl++;break;case 'BLK':s.blk++;break;case 'TO':s.to++;break;case 'PF':s.pf++;break;}});
- ev.forEach(function(e){if(!e.on)return;var v=(e.pid&&PTS[e.type])?PTS[e.type]:(e.type==='OPP'?-(e.v||0):0);if(!v)return;e.on.forEach(function(id){var x=m[id]||(m[id]=blank());x.pm+=v;});});
+ ev.forEach(function(e){if(!e.on||e.adj)return;var v=(e.pid&&PTS[e.type])?PTS[e.type]:(e.type==='OPP'?-(e.v||0):0);if(!v)return;e.on.forEach(function(id){var x=m[id]||(m[id]=blank());x.pm+=v;});});
  return m;}
 function ourPts(ev){return ev.reduce(function(a,e){return a+((e.pid&&PTS[e.type])||(e.type==='USP'?(e.v||0):0));},0);}
 function usFoulCount(ev,per){return ev.filter(function(e){return (e.type==='PF'||e.type==='UPF')&&(per==null||e.per===per);}).length;}
@@ -755,7 +757,7 @@ function perShort(p){var n=S.settings.periods;if(p>n)return 'OT'+(p-n>1?p-n:'');
 function fmt(ms){var s=Math.ceil(ms/1000),m=Math.floor(s/60);return m+':'+pad2(s%60);}
 function fmtMin(ms){if(!ms)return '0:00';var s=Math.floor(ms/1000);return Math.floor(s/60)+':'+pad2(s%60);}
 function oppName(){return L.oppAbbr||'OPP';}
-function evText(e,r){if(e.type==='USP')return '+'+(e.v||0)+' – '+S.abbr;if(e.type==='UPF')return 'Foul – '+S.abbr+(e.num?' #'+e.num:'');if(e.type==='OPP')return (e.v>0?'+':'')+e.v+' – '+oppName();if(e.type==='OPF')return 'Foul – '+oppName()+(e.num?' #'+e.num:'');if(e.type==='OTOUT')return 'Timeout – '+oppName();if(e.type==='TOUT')return 'Timeout – '+S.abbr;if(e.type==='PF'&&!e.pid)return 'Team foul – '+S.abbr;return LABEL[e.type]+' – '+(e.pid?pname(e.pid,r):'');}
+function evText(e,r){if(e.adj)return 'Score adjusted '+(e.v>0?'+':'')+e.v+' – '+(e.type==='USP'?S.abbr:oppName());if(e.type==='USP')return '+'+(e.v||0)+' – '+S.abbr;if(e.type==='UPF')return 'Foul – '+S.abbr+(e.num?' #'+e.num:'');if(e.type==='OPP')return (e.v>0?'+':'')+e.v+' – '+oppName();if(e.type==='OPF')return 'Foul – '+oppName()+(e.num?' #'+e.num:'');if(e.type==='OTOUT')return 'Timeout – '+oppName();if(e.type==='TOUT')return 'Timeout – '+S.abbr;if(e.type==='PF'&&!e.pid)return 'Team foul – '+S.abbr;return LABEL[e.type]+' – '+(e.pid?pname(e.pid,r):'');}
 function buzz(ms){try{if(navigator.vibrate)navigator.vibrate(ms||12);}catch(e){}}
 
 /* ---------- toast ---------- */
@@ -1075,7 +1077,7 @@ function helpSheet(){
   q('Team fouls & timeouts','Tap <b>FOUL</b> or <b>T/O</b>, then the <b>team</b> button (your team name) for a bench/technical foul or your own timeout. Team fouls reset each period.')+
   q('Clock & periods','Tap the clock to start or stop. <b>Press and hold the clock</b> to type the time or slide left/right to adjust, change the period, or jump to the next period (overtime included). The <b>◀ POSS ▶</b> button under the clock is the alternating-possession arrow: tap it to flip.')+
   q('Subs & minutes','Tap <b>Subs</b>, or press and hold a player on the court. In the substitution panel, tap players on the court to mark them <b>OUT</b> and bench players to mark them <b>IN</b>, then tap <b>Swap</b> / <b>Confirm sub</b>. Each jersey shows points, fouls and minutes. Minutes are tracked only while the clock runs.')+
-  q('Simple mode','Flip the <b>Simple</b> switch at the top of the game screen for a bare-bones scorekeeper: both scores with +1/+2/+3, the possession arrow, the period (fouls reset each half), and fouls for both teams by jersey number. No clock and no player stats. Great for handing to a parent.')+
+  q('Simple mode','Flip the <b>Simple</b> switch at the top of the game screen for a bare-bones scorekeeper: both scores with +3/+2/+1 (tap a score to type it in), the possession arrow, the period (fouls reset each half), and fouls for both teams by jersey number. No clock and no player stats. Great for handing to a parent.')+
   q('Fixing mistakes','<b>Undo</b> removes the last play. Tap the <b>play-by-play</b> at the bottom of the game screen to delete any play.')+
   q('Ending a game','On Home tap <b>End &amp; save game</b> (or use the Stats screen). You\'ll get the final box score with Share, Text, Email and CSV options. It then shows in <b>Past games</b> and <b>Season stats</b>.')+
   q('Sharing & live viewing','<b>Share team</b> on Home gives two links. <b>Viewer</b>: anyone can follow live games, box scores and season stats, read-only. <b>Contributor</b>: a co-coach joins and can keep stats and edit the roster; everything syncs. Only share contributor links with people you trust.')+
@@ -1114,8 +1116,8 @@ function simpleHtml(){
  var pn=periodNames(),per=Math.min(L.period,pn.length);
  return '<div class="simple">'+
   '<div class="ssb">'+
-   '<div class="sside"><button class="ab us" data-act="team"><span class="lbl">'+esc(S.abbr)+'</span></button><div class="sbig">'+us+'</div><div class="sptrow">'+pts('us')+'</div></div>'+
-   '<div class="sside"><button class="ab" data-act="game"><span class="lbl">'+esc(L.oppAbbr||'OPP')+'</span></button><div class="sbig">'+them+'</div><div class="sptrow">'+pts('opp')+'</div></div>'+
+   '<div class="sside"><button class="ab us" data-act="team"><span class="lbl">'+esc(S.abbr)+'</span></button><button class="sbig" data-act="sset" data-v="us" aria-label="Set score">'+us+'</button><div class="sptrow">'+pts('us')+'</div></div>'+
+   '<div class="sside"><button class="ab" data-act="game"><span class="lbl">'+esc(L.oppAbbr||'OPP')+'</span></button><button class="sbig" data-act="sset" data-v="opp" aria-label="Set score">'+them+'</button><div class="sptrow">'+pts('opp')+'</div></div>'+
    '<button class="sposs'+(L.poss?' set':'')+'" data-act="poss">'+(L.poss==='us'?'<span class="pa">◀</span> POSSESSION':L.poss==='opp'?'POSSESSION <span class="pa">▶</span>':'◀ POSSESSION ▶')+'</button>'+
   '</div>'+
   '<div class="speriods">'+pn.map(function(n,i){return '<button class="'+(per===i+1?'on':'')+'" data-act="speriod" data-v="'+(i+1)+'">'+n+'</button>';}).join('')+'</div>'+
@@ -1296,6 +1298,15 @@ function teamsSheet(){
  '<div class="btns"><button class="btn sec" data-act="team">Edit '+esc(S.team)+'</button><button class="btn" data-act="team-new">+ Add team</button></div>'+
  '<p class="muted">Each team keeps its own roster, color, current game and past games. Switching mid-game is fine; the game waits where you left it.</p>';
 }
+var scoreSide='us',scoreNum='';
+function scoreSheet(){
+ var us=scoreSide==='us',cur=us?ourPts(L.events):oppPts(L.events);
+ var keys9=[1,2,3,4,5,6,7,8,9].map(function(n){return '<button data-act="sk" data-v="'+n+'">'+n+'</button>';}).join('');
+ return head('Set '+esc(us?S.abbr:oppName())+' score')+
+  '<p class="muted" style="margin:-6px 0 10px">Currently '+cur+'. Type the correct score.</p>'+
+  '<div class="numdisp"><span id="skd">'+(scoreNum||'<i>'+cur+'</i>')+'</span></div>'+
+  '<div class="np">'+keys9+'<button data-act="sk-back">⌫</button><button data-act="sk" data-v="0">0</button><button class="ok" data-act="sk-ok">✓</button></div>';
+}
 function numSheet(){
  var us=numSide==='us',m=us?usFoulNums(L.events):oppFoulCounts(L.events),keys=Object.keys(m).sort(function(a,b){return (+a)-(+b);});
  var keys9=[1,2,3,4,5,6,7,8,9].map(function(n){return '<button data-act="np" data-v="'+n+'">'+n+'</button>';}).join('');
@@ -1445,7 +1456,9 @@ function editSheet(){
  var e=L.events.filter(function(x){return x.id===editId;})[0];
  if(!e)return head('Edit play')+'<p class="muted">That play was removed.</p><div class="btns"><button class="btn" data-act="log">Back</button></div>';
  var h=head('Edit play')+'<p class="muted" style="margin:-6px 0 12px">'+perShort(e.per)+' '+fmt(e.clk*1000)+' · '+esc(evText(e))+'</p>';
- if(e.type==='OPP'||e.type==='USP'){
+ if(e.adj){
+  h+='<p class="muted">This sets the score by hand. Delete it to undo the change.</p>';
+ }else if(e.type==='OPP'||e.type==='USP'){
   h+='<div class="sec-lbl">'+(e.type==='USP'?esc(S.abbr):'OPPONENT')+' POINTS</div><div class="chips">'+[1,2,3].map(function(v){return '<button class="'+(e.v===v?'on':'')+'" data-act="ed-oppv" data-v="'+v+'">+'+v+'</button>';}).join('')+'</div>';
  }else if(e.type==='OPF'||e.type==='UPF'){
   h+='<div class="sec-lbl">'+(e.type==='UPF'?esc(S.abbr):'OPPONENT')+' JERSEY #</div><label class="fld" style="margin:0"><input id="ed-num" inputmode="numeric" maxlength="2" value="'+esc(e.num||'')+'" placeholder="No number"></label>';
@@ -1537,7 +1550,7 @@ function historySheet(){
 }
 
 /* ---------- app updates (installed app) ---------- */
-var APP_VERSION='20261107213016';
+var APP_VERSION='20261107213351';
 function showUpdate(){if(document.getElementById('upd'))return;var b=document.createElement('button');b.id='upd';b.className='upd';b.innerHTML='✨ New version ready · <b>Tap to update</b>';b.onclick=function(){save();location.reload();};document.body.appendChild(b);}
 function checkUpdate(){if(inFrame||APP_VERSION==='dev'||!navigator.onLine)return;fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(j){if(j&&j.v&&j.v!==APP_VERSION)showUpdate();}).catch(function(){});}
 setTimeout(checkUpdate,4000);setInterval(checkUpdate,180000);
@@ -1598,6 +1611,14 @@ document.addEventListener('click',function(e){
  case 'simple':S.settings.simple=!S.settings.simple;S.tAt=Date.now();sel=null;pending=null;save();render();toast(S.settings.simple?'Simple mode: score, fouls & possession':'Full stats mode');break;
  case 'usp':pushEv({type:'USP',pid:null,v:+d.v});flash={id:'US',lbl:'+'+d.v};toast('+'+d.v+' – '+S.abbr);render();break;
  case 'sfoul':numSide=d.v;oppNum='';openSheet(numSheet);break;
+ case 'sset':scoreSide=d.v;scoreNum='';openSheet(scoreSheet);break;
+ case 'sk':if(scoreNum.length<3){scoreNum=(scoreNum+d.v).replace(/^0+(?=\d)/,'');}var skd=document.getElementById('skd');if(skd)skd.textContent=scoreNum;break;
+ case 'sk-back':scoreNum=scoreNum.slice(0,-1);var skd2=document.getElementById('skd');if(skd2)skd2.innerHTML=scoreNum||'<i>'+(scoreSide==='us'?ourPts(L.events):oppPts(L.events))+'</i>';break;
+ case 'sk-ok':
+  if(scoreNum===''){closeSheet();break;}
+  var tgt=+scoreNum,curS=scoreSide==='us'?ourPts(L.events):oppPts(L.events),diff=tgt-curS;
+  if(diff){var ae=pushEv({type:scoreSide==='us'?'USP':'OPP',pid:null,v:diff,adj:1});delete ae.on;save();toast((scoreSide==='us'?S.abbr:oppName())+' score set to '+tgt);}
+  closeSheet();break;
  case 'speriod':var np=+d.v;if(np!==L.period){L.period=np;markClock();save();render();toast(periodNames()[Math.min(np,periodNames().length)-1]+' · team fouls reset');}break;
  case 'poss':L.poss=L.poss==='us'?'opp':'us';L.pAt=Date.now();buzz(10);save();render();break;
  case 'poss-set':L.poss=d.v||null;L.pAt=Date.now();save();refreshSheet();render();break;

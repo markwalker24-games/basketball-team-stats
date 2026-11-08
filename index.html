@@ -284,6 +284,10 @@ textarea.cp{width:100%;height:160px;font-size:13px;border:1px solid var(--line2)
 .tile b{font-size:15px;display:block;margin-top:10px}
 .tile small{color:var(--muted);font-size:12.5px;margin-top:2px;line-height:1.35}
 .teamsw .back{width:18px;height:18px;margin-left:-4px}
+.trow{display:flex;gap:8px;align-items:stretch}
+.menu .trow .tpick{flex:1;min-width:0}
+.menu .trow .tdel{width:50px;flex:none;justify-content:center;align-items:center;padding:0;background:#fbeee6;border-color:#f3d6c8;color:var(--miss)}
+.menu .trow .tdel svg{width:19px;height:19px}
 /* ---- fit-to-screen layout (no scrolling) ---- */
 html,body{height:100%;overflow:hidden}
 #root{height:100vh;height:100dvh;min-height:0;padding-top:env(safe-area-inset-top);overflow:hidden}
@@ -330,6 +334,7 @@ var ICON={
  hist:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 2"/></svg>',
  trophy:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0Z"/><path d="M7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4"/></svg>',
  cloud:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18a5 5 0 1 1 .9-9.9A6 6 0 0 1 19 10a4 4 0 0 1-1 8Z"/><path d="M12 11v6M9.5 14.5 12 17l2.5-2.5"/></svg>',
+ trash:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg>',
  pen:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>'
 };
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
@@ -537,7 +542,7 @@ function homeHtml(){
  var recent=rec.length?'<div class="hlbl">RECENT GAMES'+(S.games.length>3?'<button data-act="history">See all</button>':'')+'</div><div>'+rec.map(function(g){var r=g.us>g.them?'W':g.us<g.them?'L':'T';
   return '<button class="grow" data-act="hist-open" data-id="'+g.id+'"><span class="gl"><span class="wl '+(r==='L'?'l':r==='T'?'t':'')+'">'+r+'</span><span><b>vs '+esc(g.opp)+'</b><br><span class="muted">'+esc(niceDate(g.date))+'</span></span></span><span class="gs">'+g.us+'–'+g.them+'</span></button>';}).join('')+'</div>':'';
  return '<div class="home"><div class="brand"><h1>🏀 Team Stats</h1><small>'+(DB.teams.length>1?DB.teams.length+' teams':'')+'</small></div>'+
-  '<div class="hlbl">TEAMS</div><div class="tcards">'+cards+'</div>'+hero+tiles+recent+'</div>';
+  '<div class="hlbl">TEAMS<button data-act="teams">Manage</button></div><div class="tcards">'+cards+'</div>'+hero+tiles+recent+'</div>';
 }
 function seasonSheet(){
  var P=seasonData(S),rows=Object.keys(P).map(function(id){return P[id];}).sort(function(a,b){return b.s.pts/b.gp-a.s.pts/a.gp;});
@@ -677,7 +682,7 @@ function gameSheet(){
 }
 function teamsSheet(){
  return head('Teams')+'<div class="menu">'+DB.teams.map(function(t){var w=0,l=0;t.games.forEach(function(g){if(g.us>g.them)w++;else if(g.us<g.them)l++;});
-  return '<button class="tpick'+(t.id===S.id?' cur':'')+'" data-act="team-pick" data-id="'+t.id+'"><span class="tl"><i style="background:linear-gradient(135deg,'+t.settings.accent+' 58%,'+t.settings.accent2+' 58%)"></i><span><b>'+esc(t.team)+'</b><small>'+t.roster.length+(t.roster.length===1?' player':' players')+' · '+w+'–'+l+(t.live.events.length?' · game in progress':'')+'</small></span></span><span>'+(t.id===S.id?'Current':'Switch →')+'</span></button>';}).join('')+'</div>'+
+  return '<div class="trow"><button class="tpick'+(t.id===S.id?' cur':'')+'" data-act="team-pick" data-id="'+t.id+'"><span class="tl"><i style="background:linear-gradient(135deg,'+t.settings.accent+' 58%,'+t.settings.accent2+' 58%)"></i><span><b>'+esc(t.team)+'</b><small>'+t.roster.length+(t.roster.length===1?' player':' players')+' · '+w+'–'+l+(t.live.events.length?' · game in progress':'')+'</small></span></span><span>'+(t.id===S.id?'Current':'Switch')+'</span></button><button class="tdel" data-act="team-del-id" data-id="'+t.id+'" aria-label="Delete '+esc(t.team)+'">'+ICON.trash+'</button></div>';}).join('')+'</div>'+
  '<div class="btns"><button class="btn sec" data-act="team">Edit '+esc(S.team)+'</button><button class="btn" data-act="team-new">+ Add team</button></div>'+
  '<p class="muted">Each team keeps its own roster, color, current game and past games. Switching mid-game is fine; the game waits where you left it.</p>';
 }
@@ -691,7 +696,7 @@ function numSheet(){
  '<div class="btns"><button class="btn sec" data-act="np-none">Team foul (no number)</button></div>';
 }
 /* team + roster editor: every change applies live */
-var teamDirty=false,gameDirty=false,liveT=null,startMode=false,startGo=false;
+var pendingDel=null,teamDirty=false,gameDirty=false,liveT=null,startMode=false,startGo=false;
 function applyTD(){
  var oldFull=S.settings.periodMin*60000;
  S.team=String(TD.team).trim()||'My Team';
@@ -743,7 +748,7 @@ function teamSheet(){
  '<div class="two"><label class="fld">Minutes per period<input id="t-min" type="number" inputmode="numeric" min="1" max="20" value="'+esc(TD.min)+'"></label>'+
  '<label class="fld">Periods<select id="t-per"><option value="4"'+(+TD.per===4?' selected':'')+'>4 quarters</option><option value="2"'+(+TD.per===2?' selected':'')+'>2 halves</option></select></label></div>'+
  '<div class="btns"><button class="btn" data-act="done">Done</button></div>'+
- (DB.teams.length>1?'<div class="btns"><button class="btn sec" style="color:var(--miss)" data-act="team-del">Delete this team</button></div>':'')+
+ '<div class="btns"><button class="btn sec" style="color:var(--miss)" data-act="team-del">Delete this team</button></div>'+
  '<p class="muted">The first 5 players start on the court in a new game. During a game, tap Subs or press and hold a player to change who\'s in.</p>';
 }
 /* clock editor */
@@ -920,8 +925,17 @@ document.addEventListener('click',function(e){
   var used=DB.teams.map(function(t){return t.settings.accent;});
   var nt=normalize({id:uid(),team:'Team '+(DB.teams.length+1),abbr:'US',roster:[],games:[],settings:{periodMin:S.settings.periodMin,periods:S.settings.periods,v3:1,accent:ACCENTS.filter(function(c){return used.indexOf(c)<0;})[0]||ACCENTS[0],accent2:'#ffffff'}});
   DB.teams.push(nt);switchTeam(nt.id);openTeam();break;
- case 'team-del':openSheet(confirmSheet('Delete '+esc(S.team)+'?','This removes the team, its roster and all of its past games for good.','team-del-yes','Delete team',true));break;
- case 'team-del-yes':var did=S.id;DB.teams=DB.teams.filter(function(t){return t.id!==did;});switchTeam(DB.teams[0].id);closeSheet();persist('Team deleted');break;
+ case 'team-del':case 'team-del-id':
+  var dt=DB.teams.filter(function(t){return t.id===(a==='team-del'?S.id:d.id);})[0];if(!dt)break;pendingDel=dt.id;
+  var gN=dt.games.length;
+  openSheet(confirmSheet('Delete '+esc(dt.team)+'?','This permanently deletes '+esc(dt.team)+' along with '+(function(){var x=['its roster'];if(dt.live.events.length)x.push('the game in progress');if(gN)x.push(gN+' past game'+(gN===1?'':'s'));return x.length>1?x.slice(0,-1).join(', ')+' and '+x[x.length-1]:x[0];})()+'.'+(DB.teams.length===1?' A fresh empty team will take its place.':''),'team-del-yes','Delete team',true));break;
+ case 'team-del-yes':
+  var did=pendingDel;pendingDel=null;if(!did)break;stopClock();
+  DB.teams=DB.teams.filter(function(t){return t.id!==did;});
+  if(!DB.teams.length)DB.teams.push(normalize({id:uid(),team:'My Team',abbr:'US',roster:[],games:[],settings:{periodMin:8,periods:4,v3:1}}));
+  if(did===S.id||!DB.teams.some(function(t){return t.id===S.id;})){S=DB.teams[0];L=S.live;DB.cur=S.id;}
+  view='home';DB.view='home';sel=null;pending=null;subMode=false;
+  closeSheet();persist('Team deleted');break;
  case 'opp':pushEv({type:'OPP',pid:null,v:+d.v});toast('+'+d.v+' – '+oppName());render();break;
  case 'clock':if(L.running)stopClock();else startClock();break;
  case 'clockedit':openClock();break;

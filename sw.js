@@ -1,4 +1,4 @@
-const CACHE = 'team-stats-v8';
+const CACHE = 'team-stats-v9';
 const CORE = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png', './favicon.png'];
 
 self.addEventListener('install', e => {

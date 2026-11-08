@@ -541,6 +541,7 @@ function closeSheet(){
  closeT=setTimeout(function(){ov.style.display='none';ov.innerHTML='';ov.classList.remove('closing');},170);
  render();
  if(wasTeam)persist('Team saved');
+ if(finalPersist){finalPersist=false;finalMode=false;viewGame=null;persist('Game saved');}
 }
 function head(t){return '<div class="shh"><h2>'+t+'</h2><button class="x" data-act="close">✕</button></div>';}
 function confirmSheet(title,msg,yesAct,yesLabel,danger){return function(){return head(title)+'<p class="muted">'+msg+'</p><div class="btns"><button class="btn sec" data-act="close">Cancel</button><button class="btn'+(danger?' danger':'')+'" data-act="'+yesAct+'">'+yesLabel+'</button></div>';};}
@@ -734,13 +735,22 @@ function boxTable(g){
  '<tfoot><tr><td class="nm">Team</td><td></td><td class="pts">'+t.pts+'</td><td>'+t.fgm+'-'+t.fga+'</td><td>'+t.tpm+'-'+t.tpa+'</td><td>'+t.ftm+'-'+t.fta+'</td><td>'+t.orb+'</td><td>'+t.drb+'</td><td>'+(t.orb+t.drb)+'</td><td>'+t.ast+'</td><td>'+t.stl+'</td><td>'+t.blk+'</td><td>'+t.to+'</td><td>'+t.pf+'</td></tr></tfoot></table></div>'+
  '<div class="kpis"><div class="kpi"><b>'+pct(t.fgm,t.fga)+'</b><small>FG</small></div><div class="kpi"><b>'+pct(t.tpm,t.tpa)+'</b><small>3PT</small></div><div class="kpi"><b>'+pct(t.ftm,t.fta)+'</b><small>FT</small></div></div>';
 }
+function niceDate(d){try{var x=new Date(d+'T12:00:00');return x.toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'});}catch(e){return d;}}
 function boxText(g){
- var T=tally(g.events),r=sortRoster(g.roster),t=totals(T,r);
- var out=[g.team+' '+ourPts(g.events)+', '+g.opp+' '+oppPts(g.events)+' ('+g.date+')',''];
+ var T=tally(g.events),r=sortRoster(g.roster),t=totals(T,r),us=ourPts(g.events),them=oppPts(g.events);
+ var res=us>them?'W':us<them?'L':'T';
+ var out=['🏀 '+g.team+' '+us+', '+g.opp+' '+them+(viewGame||g.final?' (Final)':' (in progress)'),niceDate(g.date)+(viewGame||g.final?' · '+res+' '+us+'–'+them:''),''];
+ var scorers=r.filter(function(p){return (T[p.id]||blank()).pts>0;}).sort(function(a,b){return T[b.id].pts-T[a.id].pts;});
+ if(scorers.length)out.push('Top scorers: '+scorers.slice(0,3).map(function(p){return p.name+' '+T[p.id].pts;}).join(', '),'');
+ out.push('Team: FG '+t.fgm+'/'+t.fga+' ('+pct(t.fgm,t.fga)+') · 3PT '+t.tpm+'/'+t.tpa+' · FT '+t.ftm+'/'+t.fta+' · REB '+(t.orb+t.drb)+' · AST '+t.ast+' · STL '+t.stl+' · TO '+t.to,'','Players:');
  r.forEach(function(p){var s=T[p.id]||blank();if(!T[p.id]&&!g.mins[p.id])return;
-  out.push('#'+p.num+' '+p.name+': '+s.pts+' pts, '+s.fgm+'-'+s.fga+' FG, '+s.tpm+'-'+s.tpa+' 3PT, '+s.ftm+'-'+s.fta+' FT, '+(s.orb+s.drb)+' reb, '+s.ast+' ast, '+s.stl+' stl, '+s.blk+' blk, '+s.to+' TO, '+s.pf+' PF'+(g.mins[p.id]?', '+fmtMin(g.mins[p.id])+' min':''));});
- out.push('');out.push('Team: '+t.pts+' pts, FG '+t.fgm+'-'+t.fga+' ('+pct(t.fgm,t.fga)+'), 3PT '+t.tpm+'-'+t.tpa+', FT '+t.ftm+'-'+t.fta+', '+(t.orb+t.drb)+' reb, '+t.ast+' ast, '+t.to+' TO');
- var m=oppFoulCounts(g.events);out.push(g.opp+': '+cnt(g.events,'OPF')+' fouls'+(Object.keys(m).length?' ('+Object.keys(m).map(function(k){return '#'+k+' '+m[k];}).join(', ')+')':'')+', '+cnt(g.events,'OTOUT')+' timeouts');
+  var bits=[s.pts+' pts'];
+  if(s.orb+s.drb)bits.push((s.orb+s.drb)+' reb');if(s.ast)bits.push(s.ast+' ast');if(s.stl)bits.push(s.stl+' stl');if(s.blk)bits.push(s.blk+' blk');
+  if(s.fga)bits.push(s.fgm+'-'+s.fga+' FG');if(s.tpa)bits.push(s.tpm+'-'+s.tpa+' 3PT');if(s.fta)bits.push(s.ftm+'-'+s.fta+' FT');
+  if(s.to)bits.push(s.to+' TO');if(s.pf)bits.push(s.pf+' PF');if(g.mins[p.id])bits.push(fmtMin(g.mins[p.id])+' min');
+  out.push('#'+p.num+' '+p.name+' — '+bits.join(' · '));});
+ var m=oppFoulCounts(g.events);
+ out.push('','Fouls: '+g.team+' '+cnt(g.events,'PF')+' · '+g.opp+' '+cnt(g.events,'OPF')+(Object.keys(m).length?' ('+Object.keys(m).map(function(k){return '#'+k+'×'+m[k];}).join(', ')+')':''));
  return out.join('\n');
 }
 function boxCsv(g){
@@ -750,15 +760,23 @@ function boxCsv(g){
  r.forEach(function(p){var s=T[p.id]||blank();lines.push([p.num,p.name,fmtMin(g.mins[p.id]||0),s.pts,s.fgm,s.fga,s.tpm,s.tpa,s.ftm,s.fta,s.orb,s.drb,s.orb+s.drb,s.ast,s.stl,s.blk,s.to,s.pf].map(q).join(','));});
  return lines.join('\n');
 }
-var viewGame=null,copyFallback=false;
+var viewGame=null,copyFallback=false,finalMode=false,finalPersist=false;
+var canShare=!!(navigator.share)&&!inFrame;
+function curGame(){return viewGame||liveGame();}
+function fileName(g,ext){return (g.team+' vs '+g.opp+' '+g.date).replace(/[^\w\- ]+/g,'').replace(/\s+/g,'_')+'.'+ext;}
 function boxSheet(){
  var g=viewGame||liveGame(),us=ourPts(g.events),them=oppPts(g.events);
- return head(viewGame?'vs '+esc(g.opp):'Box score')+
+ return head(finalMode?'Final':(viewGame?'vs '+esc(g.opp):'Box score'))+
+ (finalMode?'<p class="muted" style="margin:-6px 0 12px">Game saved to Past games. Send the stats, then tap Done to start a fresh game.</p>':'')+
  '<div class="final"><div><small>'+esc(g.team)+'</small><b style="color:'+(us>=them?'var(--text)':'var(--muted)')+'">'+us+'</b></div><div style="align-items:center"><small>'+esc(g.date)+'</small><span class="muted">'+(viewGame?'Final':'Live')+'</span></div><div class="r"><small>'+esc(g.opp)+'</small><b style="color:'+(them>us?'var(--text)':'var(--muted)')+'">'+them+'</b></div></div>'+
  boxTable(g)+oppSection(g)+
  '<div class="btns"><button class="btn sec" data-act="copybox">Copy as text</button>'+(canDownload()?'<button class="btn sec" data-act="csv">Download CSV</button>':'')+'</div>'+
+ '<div class="sec-lbl">SEND STATS</div><div class="btns" style="margin-top:0">'+
+  (canShare?'<button class="btn" data-act="send-share">Share…</button>':'')+
+  (!inFrame?'<button class="btn'+(canShare?' sec':'')+'" data-act="send-sms">Text</button><button class="btn sec" data-act="send-email">Email</button>':'<button class="btn" data-act="copybox">Copy summary to paste in a text</button>')+
+ '</div>'+(inFrame?'<p class="muted">In the installed app you can also send straight to Messages, email or any app.</p>':'')+
  (copyFallback?'<p class="muted">Copy didn\'t work here — select the text below:</p><textarea class="cp" readonly>'+esc(boxText(g))+'</textarea>':'')+
- (viewGame?'<div class="btns"><button class="btn sec" data-act="history">← Past games</button><button class="btn danger" data-act="hist-del">Delete game</button></div>':'');
+ (finalMode?'<div class="btns"><button class="btn" data-act="done">Done</button></div>':(viewGame?'<div class="btns"><button class="btn sec" data-act="history">← Past games</button><button class="btn danger" data-act="hist-del">Delete game</button></div>':''));
 }
 function historySheet(){
  var gs=S.games.slice().reverse();
@@ -809,7 +827,7 @@ document.addEventListener('click',function(e){
   var ev=L.events.pop();if(ev){save();toast('Undid: '+evText(ev));}else toast('Nothing to undo');render();break;
  case 'sub':subMode=!subMode;sel=null;pending=null;render();break;
  case 'menu':openSheet(menuSheet);break;
- case 'box':viewGame=null;copyFallback=false;openSheet(boxSheet);break;
+ case 'box':viewGame=null;finalMode=false;copyFallback=false;openSheet(boxSheet);break;
  case 'log':openSheet(logSheet);break;
  case 'logdel':L.events=L.events.filter(function(x){return x.id!==d.id;});save();refreshSheet();render();break;
  case 'close':closeSheet();break;
@@ -840,14 +858,15 @@ document.addEventListener('click',function(e){
   if(!L.onCourt.length)L.onCourt=ids.slice(0,5);
   break;
  case 'history':viewGame=null;openSheet(historySheet);break;
- case 'hist-open':viewGame=S.games.filter(function(g){return g.id===d.id;})[0]||null;copyFallback=false;if(viewGame)openSheet(boxSheet);break;
+ case 'hist-open':finalMode=false;viewGame=S.games.filter(function(g){return g.id===d.id;})[0]||null;copyFallback=false;if(viewGame)openSheet(boxSheet);break;
  case 'hist-del':openSheet(confirmSheet('Delete this game?','The box score for '+esc(viewGame.date)+' vs '+esc(viewGame.opp)+' will be removed for good.','hist-del-yes','Delete',true));break;
  case 'hist-del-yes':var gid=viewGame&&viewGame.id;S.games=S.games.filter(function(g){return g.id!==gid;});viewGame=null;closeSheet();persist('Game deleted');break;
  case 'endgame':openSheet(confirmSheet('End game?','Final: '+esc(S.team)+' '+ourPts(L.events)+' – '+esc(L.opp)+' '+oppPts(L.events)+'. The box score goes to Past games and a fresh game starts.','endgame-yes','End &amp; save'));break;
  case 'endgame-yes':
   stopClock();
   S.games.push({id:L.id,date:L.date,opp:L.opp,oppAbbr:L.oppAbbr,oppColor:L.oppColor,team:S.team,us:ourPts(L.events),them:oppPts(L.events),roster:S.roster.map(function(p){return {id:p.id,num:p.num,name:p.name};}),events:L.events,mins:L.mins});
-  S.live=newLive(S);L=S.live;sel=null;pending=null;subMode=false;closeSheet();persist('Game saved');break;
+  S.live=newLive(S);L=S.live;sel=null;pending=null;subMode=false;save();
+  viewGame=S.games[S.games.length-1];finalMode=true;finalPersist=true;copyFallback=false;openSheet(boxSheet);render();break;
  case 'discard':openSheet(confirmSheet('Discard this game?','All stats for the current game will be erased. This can\'t be undone.','discard-yes','Discard',true));break;
  case 'discard-yes':stopClock();S.live=newLive(S);L=S.live;sel=null;pending=null;save();closeSheet();toast('New game started');break;
  case 'savenow':closeSheet();persist('Saved');break;
@@ -862,13 +881,20 @@ document.addEventListener('click',function(e){
   DB.teams.forEach(function(t){t.id=t.id||uid();normalize(t);});
   S=DB.teams.filter(function(t){return t.id===DB.cur;})[0]||DB.teams[0];DB.cur=S.id;L=S.live;sel=null;pending=null;subMode=false;
   closeSheet();persist('Backup restored');break;
+ case 'send-share':
+  var gs=curGame(),st=boxText(gs),data={title:gs.team+' vs '+gs.opp,text:st};
+  try{var f=new File([boxCsv(gs)],fileName(gs,'csv'),{type:'text/csv'});if(navigator.canShare&&navigator.canShare({files:[f]}))data.files=[f];}catch(x){}
+  navigator.share(data).catch(function(err){if(err&&err.name==='AbortError')return;if(data.files){delete data.files;navigator.share(data).catch(function(){});}});
+  break;
+ case 'send-sms':location.href='sms:?&body='+encodeURIComponent(boxText(curGame()));break;
+ case 'send-email':var ge=curGame();location.href='mailto:?subject='+encodeURIComponent(ge.team+' '+ourPts(ge.events)+', '+ge.opp+' '+oppPts(ge.events)+' — stats')+'&body='+encodeURIComponent(boxText(ge));break;
  case 'copybox':
   var txt=boxText(viewGame||liveGame());
   try{navigator.clipboard.writeText(txt).then(function(){toast('Copied');},function(){copyFallback=true;refreshSheet();});}catch(err){copyFallback=true;refreshSheet();}
   break;
  case 'csv':
   var g=viewGame||liveGame();
-  downloadFile((g.team+' vs '+g.opp+' '+g.date).replace(/[^\w\- ]+/g,'').replace(/\s+/g,'_')+'.csv',boxCsv(g),'text/csv').then(function(){toast('Downloaded');}).catch(function(){toast('Download cancelled');});
+  downloadFile(fileName(g,'csv'),boxCsv(g),'text/csv').then(function(){toast('Downloaded');}).catch(function(){toast('Download cancelled');});
   break;
  }
 });

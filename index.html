@@ -395,6 +395,26 @@ textarea.cp{width:100%;height:160px;font-size:13px;border:1px solid var(--line2)
 .helpq .a{padding:0 14px 14px;color:var(--muted);font-size:14px;line-height:1.55}
 .helpq .a b{color:var(--text)}
 .qbtn{width:34px;height:34px;border-radius:50%;background:var(--surface);border:1px solid var(--line2);font:800 17px var(--cond);color:var(--text);box-shadow:0 2px 6px rgba(90,50,20,.06)}
+/* ---- substitution panel ---- */
+.sjgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px 6px;margin-top:4px}
+.sj{display:flex;flex-direction:column;align-items:center;position:relative;padding:8px 2px 6px;border-radius:14px;border:2px solid transparent;min-width:0;transition:background .12s,border-color .12s;-webkit-user-select:none;user-select:none}
+.sj .jz{width:100%;max-width:60px;transition:opacity .12s,filter .12s}
+.sj.sm .jz{max-width:48px}
+.sj .nm{font-size:12px;font-weight:600;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.sj .mt{font-size:10px;color:var(--muted);white-space:nowrap}
+.sj .mt.hot{color:var(--miss);font-weight:700}
+.sj:active{transform:scale(.95)}
+.sj.out{border-color:var(--miss);background:#fdf0ec}
+.sj.out .jz{opacity:.4;filter:grayscale(.7)}
+.sj.in{border-color:#1f9d55;background:#ebf7f0}
+.sb2{position:absolute;top:-9px;left:50%;transform:translateX(-50%);font:700 10px Inter;letter-spacing:.4px;color:#fff;padding:2px 8px;border-radius:999px;white-space:nowrap;z-index:2}
+.sj.out .sb2{background:var(--miss)}
+.sj.in .sb2{background:#1f9d55}
+.subsum{margin-top:14px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:11px 13px;font-size:14px;line-height:1.5}
+.subsum .o{color:var(--miss);font-weight:700}
+.subsum .i{color:#1f9d55;font-weight:700}
+.subsum .w{color:var(--foul);font-weight:600;font-size:13px}
+.sec-lbl em{font:500 12px Inter;letter-spacing:0;font-style:normal;color:var(--muted)}
 /* ---- fit-to-screen layout (no scrolling) ---- */
 html,body{height:100%;overflow:hidden}
 #root{height:100vh;height:100dvh;min-height:0;padding-top:env(safe-area-inset-top);overflow:hidden}
@@ -919,7 +939,7 @@ function tourSlides(){
   {h:'Tap a player, then a stat',p:'That\'s it: two taps. You can also tap the stat first and the player second. The player\'s jersey flashes so you know it counted.',v:'<div style="display:flex;flex-direction:column;align-items:center;gap:18px"><div class="mrow">'+J('3','Ava')+J('12','Mia',true)+J('24','Zoe')+'</div><div class="mbtn mk2" style="width:150px;height:64px;position:relative">+2<small>2-POINTER</small><span class="tap" style="left:50%;top:50%"></span></div></div><span class="tap d2" style="left:50%;top:26%"></span>'},
   {h:'Every stat, one tap',p:'<b>Makes</b> are the big orange buttons with <b>misses</b> under them. Rebounds, assists, steals, blocks, turnovers and fouls are on the grid. A made 3 or an and-one gets a little celebration.',v:'<div style="display:flex;flex-direction:column;gap:8px;align-items:center"><div style="display:grid;grid-template-columns:repeat(3,76px);gap:7px"><div class="mbtn mk2" style="height:52px">+3</div><div class="mbtn mk2" style="height:52px">+2</div><div class="mbtn mk2" style="height:52px">+1</div><div class="mbtn ms2" style="height:34px">MISS 3</div><div class="mbtn ms2" style="height:34px">MISS 2</div><div class="mbtn ms2" style="height:34px">MISS FT</div></div><div class="mgrid"><div class="mbtn ac2" style="height:44px">OREB</div><div class="mbtn ac2" style="height:44px">AST</div><div class="mbtn ac2" style="height:44px">STL</div><div class="mbtn ac2" style="height:44px;color:var(--foul)">FOUL</div></div></div>'},
   {h:'The other team',p:'Use <b>+1 / +2 / +3</b> under their score. For their fouls or timeouts, tap <b>FOUL</b> or <b>T/O</b>, then <b>OPP</b>, and punch in the jersey number. Team and player fouls are tracked for both sides.',v:'<div style="display:flex;flex-direction:column;align-items:center;gap:14px"><div style="display:flex;gap:6px"><span class="mpill">+1</span><span class="mpill">+2</span><span class="mpill">+3</span></div><div style="display:flex;gap:10px;align-items:center"><div class="mbtn ac2" style="width:80px;height:50px;color:var(--foul)">FOUL</div><span style="font-size:20px;color:var(--muted)">→</span><div class="mbtn" style="width:110px;height:50px;background:#2a2420;color:#fff;font-size:20px;position:relative">OPP<span class="tap" style="left:50%;top:50%"></span></div></div><div class="mck" style="font-size:28px;padding:6px 18px"># 23</div></div>'},
-  {h:'Clock & subs',p:'Tap the <b>clock</b> to start or stop it, or <b>Edit clock</b> to set the exact time. <b>Press and hold</b> any player to switch to sub mode. Minutes only count while the clock runs.',v:'<div style="display:flex;align-items:center;gap:22px"><div style="position:relative"><div class="mck">4:37<small>Q2 · LIVE</small></div><span class="tap" style="left:50%;top:50%"></span></div><div style="position:relative">'+J('12','hold',false).replace('class="mj"','class="mj" style="outline:2px dashed #b98a5e;border-radius:12px;padding:4px"')+'<span class="tap d2" style="left:50%;top:45%"></span></div></div>'},
+  {h:'Clock & subs',p:'Tap the <b>clock</b> to start or stop it, or <b>Edit clock</b> to set the exact time. Tap <b>Subs</b> or <b>press and hold</b> a player to open substitutions: tap who\'s coming out, tap who\'s going in, then <b>Swap</b>. Minutes only count while the clock runs.',v:'<div style="display:flex;align-items:center;gap:22px"><div style="position:relative"><div class="mck">4:37<small>Q2 · LIVE</small></div><span class="tap" style="left:50%;top:50%"></span></div><div style="position:relative">'+J('12','hold',false).replace('class="mj"','class="mj" style="outline:2px dashed #b98a5e;border-radius:12px;padding:4px"')+'<span class="tap d2" style="left:50%;top:45%"></span></div></div>'},
   {h:'Oops? Undo.',p:'<b>Undo</b> removes the last play. Tap the <b>play-by-play</b> at the bottom to see every play and delete any one of them.',v:'<div style="display:flex;flex-direction:column;align-items:center;gap:14px"><span class="mpill" style="position:relative">'+ICON.undo+'Undo<span class="tap" style="left:50%;top:50%"></span></span><div class="mplays"><div class="x"><span>+3 – #12 Mia</span><span>✕</span></div><div><span>Steal – #3 Ava</span><span>Q2</span></div><div><span>+2 – #24 Zoe</span><span>Q2</span></div></div></div>'},
   {h:'Share it live',p:'<b>Share team</b> gives you a <b>Viewer link</b> so family can watch the score and stats live, and a <b>Contributor link</b> so a co-coach can keep stats with you from their phone.',v:'<div style="width:250px;text-align:center"><div style="font-size:11px;font-weight:700;letter-spacing:1.3px;color:#ff4d3d">● LIVE · Q3 <span class="vck">2:14</span></div><div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;margin-top:8px"><div><div class="muted" style="font:700 13px var(--cond);letter-spacing:1px">US</div><div style="font:800 46px/1 var(--cond)">31</div></div><div style="color:var(--line2);font:800 24px var(--cond)">–</div><div><div class="muted" style="font:700 13px var(--cond);letter-spacing:1px">OPP</div><div style="font:800 46px/1 var(--cond);color:#a99b8e">24</div></div></div><div style="display:flex;gap:6px;justify-content:center;margin-top:12px"><span class="mpill">👀 Viewer</span><span class="mpill">✏️ Contributor</span></div></div>'},
   {h:'After the game',p:'<b>End &amp; save</b> gives you the final box score to send by text or link. Every saved game builds your <b>season stats</b>. Juggling several teams? Add them on Home and switch with a tap.',v:'<div style="display:flex;flex-direction:column;align-items:center;gap:10px"><div style="font:700 12px Inter;letter-spacing:1.3px;color:var(--muted)">FINAL</div><div style="font:800 44px/1 var(--cond)">39 – 30</div><span style="background:var(--ink);color:#fff;font:700 12px var(--cond);letter-spacing:1.5px;padding:4px 12px;border-radius:999px">WIN</span><div style="display:flex;gap:8px;margin-top:6px"><span class="mpill">Share link</span><span class="mpill">Season stats</span></div></div>'}
@@ -950,7 +970,7 @@ function helpSheet(){
   q('The other team','Tap <b>+1 / +2 / +3</b> under their score. For their fouls or timeouts, tap <b>FOUL</b> or <b>T/O</b>, then the <b>OPP</b> button and enter the jersey number. Tap <b>OPP</b> at the top to set their name, color and the game date.')+
   q('Team fouls & timeouts','Tap <b>FOUL</b> or <b>T/O</b>, then the <b>team</b> button (your team name) for a bench/technical foul or your own timeout. Team fouls reset each period.')+
   q('Clock & periods','Tap the clock to start or stop. <b>Edit clock</b> lets you type the time or slide left/right to adjust, change the period, or jump to the next period (overtime included).')+
-  q('Subs & minutes','Tap <b>Subs</b> (or press and hold any player), then tap players to move them on or off the court. Minutes are tracked only while the clock runs.')+
+  q('Subs & minutes','Tap <b>Subs</b>, or press and hold a player on the court. In the substitution panel, tap players on the court to mark them <b>OUT</b> and bench players to mark them <b>IN</b>, then tap <b>Swap</b> / <b>Confirm sub</b>. Each jersey shows points, fouls and minutes. Minutes are tracked only while the clock runs.')+
   q('Fixing mistakes','<b>Undo</b> removes the last play. Tap the <b>play-by-play</b> at the bottom of the game screen to delete any play.')+
   q('Ending a game','On Home tap <b>End &amp; save game</b> (or use the Stats screen). You\'ll get the final box score with Share, Text, Email and CSV options. It then shows in <b>Past games</b> and <b>Season stats</b>.')+
   q('Sharing & live viewing','<b>Share team</b> on Home gives two links. <b>Viewer</b>: anyone can follow live games, box scores and season stats, read-only. <b>Contributor</b>: a co-coach joins and can keep stats and edit the roster; everything syncs. Only share contributor links with people you trust.')+
@@ -958,6 +978,22 @@ function helpSheet(){
   q('Installing & offline','Open the app link in Safari (iPhone: Share → Add to Home Screen) or Chrome (Android: ⋮ → Install app). It works offline in the gym and syncs shared teams when you\'re back online.')+
   q('Moving to a new phone','Shared teams: open your contributor link on the new phone and join. Unshared teams: use <b>Back up / restore</b> at the bottom of the Share sheet.')+
  '</div>';
+}
+var subOut={},subIn={};
+function openSub(pid){subOut={};subIn={};if(pid){if(L.onCourt.indexOf(pid)>=0)subOut[pid]=1;else subIn[pid]=1;}openSheet(subSheet);}
+function subSheet(){
+ var T=tally(L.events),rm=rosterMap(S.roster);
+ var on=L.onCourt.map(function(id){return rm[id];}).filter(Boolean),bench=sortRoster(S.roster.filter(function(p){return L.onCourt.indexOf(p.id)<0;}));
+ var outs=on.filter(function(p){return subOut[p.id];}),ins=bench.filter(function(p){return subIn[p.id];}),after=on.length-outs.length+ins.length;
+ var sj=function(p,court){var x=T[p.id]||blank(),mark=court?(subOut[p.id]?'out':''):(subIn[p.id]?'in':'');
+  return '<button class="sj'+(court?'':' sm')+(mark?' '+mark:'')+'" data-act="'+(court?'sub-out':'sub-in')+'" data-id="'+p.id+'">'+(mark?'<span class="sb2">'+(mark==='out'?'OUT ↓':'IN ↑')+'</span>':'')+'<span class="jz">'+jersey(p.num)+'</span><span class="nm">'+esc(p.name)+'</span><span class="mt'+(x.pf>=4?' hot':'')+'">'+x.pts+'p · '+x.pf+'f'+(L.mins[p.id]?' · '+fmtMin(L.mins[p.id]):'')+'</span></button>';};
+ var changed=outs.length||ins.length;
+ var sum=changed?('<div>'+(outs.length?'<span class="o">OUT</span> '+outs.map(function(p){return esc(p.name);}).join(', '):'')+(outs.length&&ins.length?' &nbsp;→&nbsp; ':'')+(ins.length?'<span class="i">IN</span> '+ins.map(function(p){return esc(p.name);}).join(', '):'')+'</div><div class="'+(after!==5?'w':'muted')+'" style="font-size:13px">'+after+' on court after this'+(after!==5?' (usually 5)':'')+'</div>'):'<div class="muted">Tap players on the court to take them out, and bench players to put them in.</div>';
+ return head('Substitution')+
+  '<div class="sec-lbl">ON COURT <em>tap to take out</em></div><div class="sjgrid">'+(on.length?on.map(function(p){return sj(p,true);}).join(''):'<div class="muted" style="grid-column:1/-1">Nobody on the court yet.</div>')+'</div>'+
+  '<div class="sec-lbl" style="margin-top:18px">BENCH <em>tap to put in</em></div><div class="sjgrid">'+(bench.length?bench.map(function(p){return sj(p,false);}).join(''):'<div class="muted" style="grid-column:1/-1">Everyone is on the court.</div>')+'</div>'+
+  '<div class="subsum">'+sum+'</div>'+
+  '<div class="btns"><button class="btn sec" data-act="close">Cancel</button><button class="btn" data-act="sub-apply"'+(changed?'':' style="opacity:.5"')+'>'+(outs.length===1&&ins.length===1?'Swap':'Confirm sub')+'</button></div>';
 }
 /* ---------- main render ---------- */
 function pips(pf){var h='';for(var i=0;i<5;i++)h+='<i'+(i<pf?' class="on"':'')+'></i>';return '<span class="pips'+(pf>=4?' hot':'')+'">'+h+'</span>';}
@@ -1000,9 +1036,8 @@ function render(){
  if(!S.roster.length){
   body='<div class="empty"><div style="font-size:46px">🏀</div><h3>Add your roster</h3><div class="muted">Enter jersey numbers and names. You track your team; the other team just gets a score.</div><button class="btn" data-act="team" style="margin-top:6px">Set up team</button></div>';
  }else{
-  body='<div class="status"><button class="tb" data-act="undo">'+ICON.undo+'Undo</button>'+chip+'<button class="tb'+(subMode?' on':'')+'" data-act="sub">'+ICON.sub+(subMode?'Done':'Subs')+'</button></div>'+
+  body='<div class="status"><button class="tb" data-act="undo">'+ICON.undo+'Undo</button>'+chip+'<button class="tb" data-act="sub">'+ICON.sub+'Subs</button></div>'+
   '<div class="court">'+(on.length?on.map(function(p){return card(p,T);}).join(''):'<div class="muted" style="grid-column:1/-1;text-align:center;padding:14px">Nobody on the court — tap Subs, then tap players.</div>')+'</div>'+
-  (bench.length?'<div class="benchrow"><span class="blbl">BENCH</span><div class="bench">'+bench.map(function(p){return pill(p,T);}).join('')+'</div></div>':'')+
   '<div class="pad"><div class="shots">'+
    mkb('3M','+3',s?'3PT '+s.tpm+'/'+s.tpa:'3-pointer')+
    mkb('2M','+2',s?'2PT '+(s.fgm-s.tpm)+'/'+(s.fga-s.tpa):'2-pointer')+
@@ -1067,7 +1102,7 @@ var lpT=null,lpFired=false,lpX=0,lpY=0;
 root.addEventListener('pointerdown',function(e){
  var t=e.target.closest('[data-act="player"]');lpFired=false;clearTimeout(lpT);if(!t)return;
  lpX=e.clientX;lpY=e.clientY;
- lpT=setTimeout(function(){lpFired=true;buzz(30);if(!subMode){subMode=true;sel=null;pending=null;render();toast('Sub mode — tap players in/out');}},480);
+ var lpId=t.dataset.id;lpT=setTimeout(function(){lpFired=true;buzz(30);sel=null;pending=null;openSub(lpId);},450);
 });
 ['pointerup','pointercancel'].forEach(function(n){root.addEventListener(n,function(){clearTimeout(lpT);});});
 root.addEventListener('pointermove',function(e){if(Math.abs(e.clientX-lpX)>10||Math.abs(e.clientY-lpY)>10)clearTimeout(lpT);});
@@ -1192,7 +1227,7 @@ function teamSheet(){
  '<label class="fld">Periods<select id="t-per"><option value="4"'+(+TD.per===4?' selected':'')+'>4 quarters</option><option value="2"'+(+TD.per===2?' selected':'')+'>2 halves</option></select></label></div>'+
  '<div class="btns"><button class="btn" data-act="done">Done</button></div>'+
  '<div class="btns"><button class="btn sec" style="color:var(--miss)" data-act="team-del">Delete this team</button></div>'+
- '<p class="muted">The first 5 players start on the court in a new game. During a game, tap Subs or press and hold a player to change who\'s in.</p>';
+ '<p class="muted">The first 5 players start on the court in a new game. During a game, tap Subs or press and hold a player to make substitutions.</p>';
 }
 /* clock editor */
 function openClock(){stopClock();openSheet(clockSheet);}
@@ -1413,7 +1448,17 @@ document.addEventListener('click',function(e){
  case 'undo':
   if(pending||sel){pending=null;sel=null;render();break;}
   var ev=L.events.pop();if(ev){S.tomb.ev.push(ev.id);save();toast('Undid: '+evText(ev));}else toast('Nothing to undo');render();break;
- case 'sub':subMode=!subMode;sel=null;pending=null;render();break;
+ case 'sub':sel=null;pending=null;openSub(null);break;
+ case 'sub-out':if(subOut[d.id])delete subOut[d.id];else subOut[d.id]=1;buzz(8);refreshSheet();break;
+ case 'sub-in':if(subIn[d.id])delete subIn[d.id];else subIn[d.id]=1;buzz(8);refreshSheet();break;
+ case 'sub-apply':
+  var outs=L.onCourt.filter(function(id){return subOut[id];}),ins=sortRoster(S.roster).map(function(p){return p.id;}).filter(function(id){return subIn[id];});
+  if(!outs.length&&!ins.length){closeSheet();break;}
+  var q=ins.slice(),nc=[];L.onCourt.forEach(function(id){if(subOut[id]){if(q.length)nc.push(q.shift());}else nc.push(id);});nc=nc.concat(q);
+  L.onCourt=nc;L.oAt=Date.now();save();
+  var rmS=rosterMap(S.roster),nm=function(id){var x=rmS[id];return x?x.name:'';};
+  closeSheet();if(ins.length)flash={id:ins[0],lbl:'IN'};render();
+  toast((ins.length?ins.map(nm).join(', ')+' in':'')+(ins.length&&outs.length?' · ':'')+(outs.length?outs.map(nm).join(', ')+' out':''));break;
  case 'menu':case 'home':go('home');break;
  case 'resume':go('game');break;
  case 'help':openSheet(helpSheet);break;

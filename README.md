@@ -1,8 +1,8 @@
-# Team Stat Tracker
+# Basketball Team Stats
 
 A fast, phone-first basketball stat keeper for your own team. Installable as an app (PWA) and works offline.
 
-**Open:** https://markwalker24-games.github.io/team-stat-tracker/
+**Open:** https://markwalker24-games.github.io/basketball-team-stats/
 
 - iPhone: open in Safari → Share → **Add to Home Screen**
 - Android: open in Chrome → ⋮ → **Install app**

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#f6efe5"><title>Team Stat Tracker</title><link rel="manifest" href="manifest.webmanifest"><link rel="icon" type="image/png" href="favicon.png"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Stats"><link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><style id="css">
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#f6efe5"><title>Basketball Team Stats</title><link rel="manifest" href="manifest.webmanifest"><link rel="icon" type="image/png" href="favicon.png"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Team Stats"><link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><style id="css">
 :root{--p:#e8661c;--accent2:#1f1a17;--opp:#1f1a17;--oppTx:#fff;--bg:#f6efe5;--surface:#ffffff;--surface2:#faf5ee;--line:rgba(74,44,20,.11);--line2:rgba(74,44,20,.2);--text:#1f1a17;--muted:#7d6f63;--accent:#e8661c;--ball:#e8661c;--ball-d:#c9510f;--miss:#c4372c;--foul:#c27a00;--ink:#1f1a17;--cond:'Barlow Condensed',system-ui,sans-serif}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;min-height:100%;color:var(--text);font-family:Inter,system-ui,-apple-system,sans-serif;overscroll-behavior:none;-webkit-font-smoothing:antialiased}
@@ -397,7 +397,7 @@ function buildDoc(){
  var css=document.getElementById('css').textContent;
  var app=document.getElementById('app').textContent;
  var json=JSON.stringify(DB).replace(/</g,'\\u003c');
- return '<!DOCTYPE html>\n<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#f6efe5"><title>Team Stat Tracker</title>'+FONT+'<style id="css">'+css+'</style></head><body><div id="root"></div><script type="application/json" id="saved">'+json+'</'+'script><script id="app">'+app+'</'+'script></body></html>';
+ return '<!DOCTYPE html>\n<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#f6efe5"><title>Basketball Team Stats</title>'+FONT+'<style id="css">'+css+'</style></head><body><div id="root"></div><script type="application/json" id="saved">'+json+'</'+'script><script id="app">'+app+'</'+'script></body></html>';
 }
 function persist(msg){
  stopClock();save();
@@ -536,7 +536,7 @@ function homeHtml(){
  var rec=S.games.slice(-3).reverse();
  var recent=rec.length?'<div class="hlbl">RECENT GAMES'+(S.games.length>3?'<button data-act="history">See all</button>':'')+'</div><div>'+rec.map(function(g){var r=g.us>g.them?'W':g.us<g.them?'L':'T';
   return '<button class="grow" data-act="hist-open" data-id="'+g.id+'"><span class="gl"><span class="wl '+(r==='L'?'l':r==='T'?'t':'')+'">'+r+'</span><span><b>vs '+esc(g.opp)+'</b><br><span class="muted">'+esc(niceDate(g.date))+'</span></span></span><span class="gs">'+g.us+'–'+g.them+'</span></button>';}).join('')+'</div>':'';
- return '<div class="home"><div class="brand"><h1>🏀 Stat Tracker</h1><small>'+(DB.teams.length>1?DB.teams.length+' teams':'')+'</small></div>'+
+ return '<div class="home"><div class="brand"><h1>🏀 Team Stats</h1><small>'+(DB.teams.length>1?DB.teams.length+' teams':'')+'</small></div>'+
   '<div class="hlbl">TEAMS</div><div class="tcards">'+cards+'</div>'+hero+tiles+recent+'</div>';
 }
 function seasonSheet(){

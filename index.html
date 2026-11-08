@@ -458,6 +458,22 @@ html,body{height:100%;overflow:hidden}
 .mbtn.mk2{box-shadow:0 4px 0 #a5400b,0 7px 12px rgba(170,70,15,.28)}
 .mbtn.ac2,.mbtn.ms2{background:linear-gradient(180deg,#fff,#f3e9de);box-shadow:0 3px 0 #d9c6b2,0 5px 10px rgba(90,50,20,.08)}
 .mbtn.ms2{box-shadow:0 3px 0 #e6c3b5}
+/* ---- tap feedback: quick taps animate too ---- */
+@keyframes pressMk{0%{transform:translateY(4px);box-shadow:0 1px 0 #a5400b,0 2px 6px rgba(170,70,15,.25);filter:brightness(.94)}100%{}}
+@keyframes pressW{0%{transform:translateY(3px);box-shadow:0 1px 0 #d9c6b2,0 2px 5px rgba(90,50,20,.10);filter:brightness(.97)}100%{}}
+@keyframes pressS{0%{transform:translateY(2px);box-shadow:0 1px 0 #d9c6b2;filter:brightness(.97)}100%{}}
+@keyframes pressO{0%{transform:translateY(3px);box-shadow:0 1px 0 color-mix(in srgb,var(--opp) 60%,#000);filter:brightness(.92)}100%{}}
+@keyframes pressG{0%{transform:scale(.94)}100%{}}
+.mk.down{transform:translateY(4px);box-shadow:0 1px 0 #a5400b,0 2px 6px rgba(170,70,15,.25);filter:brightness(.94)}
+.ac.down,.ms.down,.tg.down{transform:translateY(3px);box-shadow:0 1px 0 #d9c6b2,0 2px 5px rgba(90,50,20,.10)}
+.tg.opp.down{box-shadow:0 1px 0 color-mix(in srgb,var(--opp) 60%,#000)}
+.tb.down,.oppb.down{transform:translateY(2px);box-shadow:0 1px 0 #d9c6b2}
+.mk.tapped{animation:pressMk .2s ease-out}
+.ac.tapped,.ms.tapped,.tg.tapped{animation:pressW .2s ease-out}
+.tg.opp.tapped{animation:pressO .2s ease-out}
+.tb.tapped,.oppb.tapped{animation:pressS .18s ease-out}
+.ib.tapped,.btn.tapped,.ck.tapped,.tile.tapped,.tcard.tapped{animation:pressG .18s ease-out}
+.sh.still{animation:none}
 </style></head><body><div id="root"></div><script type="application/json" id="saved">{"teams":[{"id":"t1","team":"My Team","abbr":"US","roster":[],"games":[],"settings":{"periodMin":8,"periods":4,"v3":1}}],"cur":"t1","rev":0}</script><script id="app">
 (function(){
 'use strict';
@@ -1134,7 +1150,7 @@ var ov=document.createElement('div');ov.className='ov';ov.style.display='none';d
 ov.addEventListener('click',function(e){if(e.target===ov)closeSheet();});
 var closeT=null;
 function openSheet(fn){clearTimeout(closeT);ov.classList.remove('closing');sheetFn=fn;ov.style.display='flex';refreshSheet(true);}
-function refreshSheet(fresh){if(!sheetFn)return;var top=fresh?0:(ov.firstChild?ov.firstChild.scrollTop:0);ov.innerHTML='<div class="sh">'+sheetFn()+'</div>';ov.firstChild.scrollTop=top;}
+function refreshSheet(fresh){if(!sheetFn)return;var top=fresh?0:(ov.firstChild?ov.firstChild.scrollTop:0);ov.innerHTML='<div class="sh'+(fresh?'':' still')+'">'+sheetFn()+'</div>';ov.firstChild.scrollTop=top;}
 function closeSheetSoft(){clearTimeout(closeT);ov.classList.remove('closing');}
 function closeSheet(){
  if(liveT){clearTimeout(liveT);liveT=null;if(sheetFn===teamSheet){syncTD();applyTD();}else if(sheetFn===gameSheet)applyGame();}
@@ -1418,10 +1434,17 @@ function historySheet(){
   return '<button class="grow" data-act="hist-open" data-id="'+g.id+'"><span class="gl"><span class="wl '+(r==='L'?'l':r==='T'?'t':'')+'">'+r+'</span><span><b>vs '+esc(g.opp)+'</b><br><span class="muted">'+esc(g.date)+'</span></span></span><span class="gs">'+g.us+'–'+g.them+'</span></button>';}).join(''):'<p class="muted">No finished games yet. Use “End game &amp; save” when a game is over.</p>');
 }
 
+/* ---------- tap feedback ---------- */
+var PRESS_SEL='.mk,.ac,.ms,.tg,.tb,.oppb,.ib,.btn,.ck,.tile';
+document.addEventListener('touchstart',function(){},{passive:true});
+document.addEventListener('pointerdown',function(e){var b=e.target.closest(PRESS_SEL);if(!b)return;b.classList.add('down');var up=function(){setTimeout(function(){b.classList.remove('down');},70);document.removeEventListener('pointerup',up);document.removeEventListener('pointercancel',up);};document.addEventListener('pointerup',up);document.addEventListener('pointercancel',up);},true);
+function tapSelector(t){var d=t.dataset,q='[data-act="'+d.act+'"]';['t','v','id'].forEach(function(k){if(d[k]!=null)q+='[data-'+k+'="'+String(d[k]).replace(/"/g,'\\"')+'"]';});return q;}
+function playTap(t){if(!t.matches||!t.matches(PRESS_SEL))return;var q=tapSelector(t);requestAnimationFrame(function(){var el=document.contains(t)?t:document.querySelector(q);if(!el)return;el.classList.remove('down','tapped');void el.offsetWidth;el.classList.add('tapped');setTimeout(function(){el.classList.remove('tapped');},260);});}
 /* ---------- actions ---------- */
 document.addEventListener('click',function(e){
  var t=e.target.closest('[data-act]');if(!t)return;
  var a=t.dataset.act,d=t.dataset;
+ playTap(t);
  if(a==='player'&&lpFired){lpFired=false;return;}
  if(a==='team-pick'&&tdragSuppress)return;
  switch(a){

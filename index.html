@@ -480,6 +480,13 @@ html,body{height:100%;overflow:hidden}
 @keyframes slotin{from{transform:translateY(14px) scale(.9);opacity:.4}to{transform:none;opacity:1}}
 .upd{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(86px + env(safe-area-inset-bottom));z-index:40;background:var(--ink);color:#fff;border-radius:999px;padding:11px 18px;font:600 14px Inter;box-shadow:0 10px 26px rgba(31,26,23,.35);white-space:nowrap;animation:up .25s ease-out}
 .upd b{color:#ffb04a}
+.ckrow{display:flex;align-items:center;gap:4px}
+.poss{height:28px;padding:0 10px;border-radius:999px;background:var(--surface2);border:1px solid var(--line2);font:700 12px var(--cond);letter-spacing:1.2px;color:#a99b8e;display:flex;align-items:center;gap:5px;box-shadow:0 2px 0 #e2d4c4}
+.poss.set{background:var(--ink);border-color:var(--ink);color:#fff;box-shadow:0 2px 0 #000}
+.poss .pa{font-size:14px;color:#ffb04a;line-height:1}
+.ckrow .ckedit{padding:6px 7px}
+.ckrow .ckedit svg{width:14px;height:14px}
+.vsb .dash.arrow{color:var(--accent);font-size:34px}
 </style></head><body><div id="root"></div><script type="application/json" id="saved">{"teams":[{"id":"t1","team":"My Team","abbr":"US","roster":[],"games":[],"settings":{"periodMin":8,"periods":4,"v3":1}}],"cur":"t1","rev":0}</script><script id="app">
 (function(){
 'use strict';
@@ -547,14 +554,14 @@ function rid(n){var a='ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789
 var liveSig='',teamSigs={},syncT=null;
 function packLive(final){
  var o=packGame(liveGame(),!!final);o.live=1;o.per=perShort(L.period);o.ck=Math.round(L.clockMs);o.run=L.running&&!final?1:0;o.at=Date.now();
- o.pl=L.events.slice(-10).reverse().map(function(e){return [perShort(e.per)+' '+fmt(e.clk*1000),evText(e)];});return o;
+ o.pos=L.poss||null;o.pl=L.events.slice(-10).reverse().map(function(e){return [perShort(e.per)+' '+fmt(e.clk*1000),evText(e)];});return o;
 }
 function pushShare(kind,sh,data){return sbRpc('put_share',{p_id:sh.id,p_kind:kind,p_secret:sh.secret,p_data:data});}
 function syncShares(){
  if(inFrame||typeof S==='undefined'||!S)return;
  clearTimeout(syncT);
  syncT=setTimeout(function(){
-  if(L&&L.share){var sig=L.share.id+':'+L.events.length+':'+L.period+':'+(L.running?'r':Math.round(L.clockMs/1000))+':'+L.opp+':'+L.oppAbbr+':'+L.oppColor+':'+S.roster.length;
+  if(L&&L.share){var sig=L.share.id+':'+L.events.length+':'+L.period+':'+(L.running?'r':Math.round(L.clockMs/1000))+':'+L.opp+':'+L.oppAbbr+':'+L.oppColor+':'+S.roster.length+':'+(L.poss||'');
    if(sig!==liveSig){var d=packLive(false);pushShare('game',L.share,d).then(function(){liveSig=sig;}).catch(function(){});}}
   scheduleTeamSync();
   DB.teams.forEach(function(t){if(!t.share||syncedTeam(t))return;var ts=t.team+':'+t.abbr+':'+t.roster.map(function(p){return p.num+p.name;}).join(',')+':'+t.games.length+':'+t.settings.accent+t.settings.accent2;
@@ -569,10 +576,10 @@ function syncedTeam(t){return !!(t.share&&(t.share.role==='owner'||t.share.role=
 function cleanRoster(r){return r.map(function(p){return {id:p.id,num:p.num,name:p.name,m:p.m||0};});}
 function coreDoc(t){return {f:'team2',team:t.team,abbr:t.abbr,settings:t.settings,tAt:t.tAt||0,roster:cleanRoster(t.roster),games:t.games,tomb:{g:t.tomb.g.slice(-3000),p:t.tomb.p.slice(-3000)}};}
 function liveDoc(t){var l=t.live,m={};Object.keys(l.mins||{}).forEach(function(k){m[k]=Math.round(l.mins[k]/1000)*1000;});
- return {f:'live2',id:l.id,cr:l.cr||0,opp:l.opp,oppAbbr:l.oppAbbr,oppColor:l.oppColor,date:l.date,mAt:l.mAt||0,period:l.period,cs:l.cs||null,events:l.events,mins:m,onCourt:l.onCourt,oAt:l.oAt||0,share:l.share||null,tombEv:t.tomb.ev.slice(-3000)};}
+ return {f:'live2',id:l.id,cr:l.cr||0,opp:l.opp,oppAbbr:l.oppAbbr,oppColor:l.oppColor,date:l.date,mAt:l.mAt||0,period:l.period,cs:l.cs||null,events:l.events,mins:m,onCourt:l.onCourt,oAt:l.oAt||0,poss:l.poss||null,pAt:l.pAt||0,share:l.share||null,tombEv:t.tomb.ev.slice(-3000)};}
 function sigOf(d){var c={};for(var k in d)if(k!=='mins')c[k]=d[k];return JSON.stringify(c);}
 function uniq(a){var o={},out=[];a.forEach(function(x){if(!o[x]){o[x]=1;out.push(x);}});return out.slice(-3000);}
-function liveFromDoc(r,fallbackMs){return {id:r.id,cr:r.cr||0,opp:r.opp||'Opponent',oppAbbr:r.oppAbbr||'OPP',oppColor:r.oppColor||'#1f1a17',date:r.date||today(),mAt:r.mAt||0,period:r.period||1,clockMs:r.cs?r.cs.ms:fallbackMs,running:false,cs:r.cs||null,onCourt:r.onCourt||[],oAt:r.oAt||0,mins:r.mins||{},events:r.events||[],share:r.share||null};}
+function liveFromDoc(r,fallbackMs){return {id:r.id,cr:r.cr||0,opp:r.opp||'Opponent',oppAbbr:r.oppAbbr||'OPP',oppColor:r.oppColor||'#1f1a17',date:r.date||today(),mAt:r.mAt||0,period:r.period||1,clockMs:r.cs?r.cs.ms:fallbackMs,running:false,cs:r.cs||null,onCourt:r.onCourt||[],oAt:r.oAt||0,poss:r.poss||null,pAt:r.pAt||0,mins:r.mins||{},events:r.events||[],share:r.share||null};}
 function mergeCore(t,r){
  var before=JSON.stringify(coreDoc(t)),tb=r.tomb||{};
  t.tomb.g=uniq(t.tomb.g.concat(tb.g||[]));t.tomb.p=uniq(t.tomb.p.concat(tb.p||[]));
@@ -599,6 +606,7 @@ function mergeLive(t,r){
   if((r.mAt||0)>(a.mAt||0)){a.opp=r.opp;a.oppAbbr=r.oppAbbr;a.oppColor=r.oppColor;a.date=r.date;a.mAt=r.mAt;}
   if(r.cs&&(!a.cs||(r.cs.at||0)>(a.cs.at||0))){a.cs=r.cs;a.period=r.cs.p||a.period;}
   if((r.oAt||0)>(a.oAt||0)){a.onCourt=r.onCourt;a.oAt=r.oAt;}
+  if((r.pAt||0)>(a.pAt||0)){a.poss=r.poss;a.pAt=r.pAt;}
   if(!a.share&&r.share)a.share=r.share;
  }
  t.live.events=t.live.events.filter(function(e){return t.tomb.ev.indexOf(e.id)<0;});
@@ -961,7 +969,7 @@ function viewerHtml(o,top){
  var ofk=Object.keys(o.of||{}).sort(function(a,b){return (+a)-(+b);});
  return '<div class="viewer">'+
   '<div class="vbrand"><span>🏀 TEAM STATS</span><button data-act="vw-app">Keep your own stats →</button></div>'+(top||'')+
-  '<div class="vsb"><div class="st">'+(o.f?'Final · '+esc(niceDate(o.d)):(o.live?'<span class="vlive">LIVE</span> · '+esc(o.per||'')+(o.ck!=null?'<span class="vck" id="vclk">'+fmt(viewerClock(o))+'</span>':''):'In progress · '+esc(niceDate(o.d))))+'</div><div class="row"><div><div class="tn">'+esc(o.t)+'</div><div class="vbig'+(o.u<o.m?' dim':'')+'">'+o.u+'</div></div><div class="dash">–</div><div><div class="tn">'+esc(o.o)+'</div><div class="vbig'+(o.m<o.u?' dim':'')+'">'+o.m+'</div></div></div>'+(o.f?'<span class="res">'+res+'</span>':'')+'</div>'+
+  '<div class="vsb"><div class="st">'+(o.f?'Final · '+esc(niceDate(o.d)):(o.live?'<span class="vlive">LIVE</span> · '+esc(o.per||'')+(o.ck!=null?'<span class="vck" id="vclk">'+fmt(viewerClock(o))+'</span>':''):'In progress · '+esc(niceDate(o.d))))+'</div><div class="row"><div><div class="tn">'+esc(o.t)+'</div><div class="vbig'+(o.u<o.m?' dim':'')+'">'+o.u+'</div></div><div class="dash'+(o.live&&!o.f&&o.pos?' arrow':'')+'">'+(o.live&&!o.f&&o.pos?(o.pos==='us'?'◀':'▶'):'–')+'</div><div><div class="tn">'+esc(o.o)+'</div><div class="vbig'+(o.m<o.u?' dim':'')+'">'+o.m+'</div></div></div>'+(o.f?'<span class="res">'+res+'</span>':'')+'</div>'+
   (tops.length&&tops[0].pts?'<div class="hlbl">TOP PERFORMERS</div><div class="tops">'+tops.map(function(x){return '<div class="topc"><span class="jz">'+jersey(x.num,o.c[0],o.c[1])+'</span><b>'+esc(x.name)+'</b><div class="pp">'+x.pts+'<span style="font-size:13px"> PTS</span></div><small>'+line(x)+'</small></div>';}).join('')+'</div>':'')+
   (o.pl&&o.pl.length&&!o.f?'<div class="hlbl">RECENT PLAYS</div><div class="vcard plays">'+o.pl.map(function(x){return '<div><span>'+esc(x[0])+'</span>'+esc(x[1])+'</div>';}).join('')+'</div>':'')+
   '<div class="hlbl">BOX SCORE</div><div class="vcard"><div class="tw" style="margin:0 -14px;padding:0 14px"><table class="box"><thead><tr><th class="nm">PLAYER</th><th>MIN</th><th>PTS</th><th>FG</th><th>3PT</th><th>FT</th><th>REB</th><th>AST</th><th>STL</th><th>BLK</th><th>TO</th><th>PF</th><th>+/-</th></tr></thead><tbody>'+rows+'</tbody>'+
@@ -1012,7 +1020,7 @@ function helpSheet(){
   q('Keeping stats','Tap a <b>player</b>, then a <b>stat</b>, or the stat first, then the player. Orange buttons are makes; the buttons under them are misses. The tiles under each jersey show points and a 5-dot foul meter.')+
   q('The other team','Tap <b>+1 / +2 / +3</b> under their score. For their fouls or timeouts, tap <b>FOUL</b> or <b>T/O</b>, then the <b>OPP</b> button and enter the jersey number. Tap <b>OPP</b> at the top to set their name, color and the game date.')+
   q('Team fouls & timeouts','Tap <b>FOUL</b> or <b>T/O</b>, then the <b>team</b> button (your team name) for a bench/technical foul or your own timeout. Team fouls reset each period.')+
-  q('Clock & periods','Tap the clock to start or stop. <b>Edit clock</b> lets you type the time or slide left/right to adjust, change the period, or jump to the next period (overtime included).')+
+  q('Clock & periods','Tap the clock to start or stop. <b>Edit clock</b> lets you type the time or slide left/right to adjust, change the period, or jump to the next period (overtime included). The <b>◀ POSS ▶</b> button under the clock is the alternating-possession arrow: tap it to flip.')+
   q('Subs & minutes','Tap <b>Subs</b>, or press and hold a player on the court. In the substitution panel, tap players on the court to mark them <b>OUT</b> and bench players to mark them <b>IN</b>, then tap <b>Swap</b> / <b>Confirm sub</b>. Each jersey shows points, fouls and minutes. Minutes are tracked only while the clock runs.')+
   q('Fixing mistakes','<b>Undo</b> removes the last play. Tap the <b>play-by-play</b> at the bottom of the game screen to delete any play.')+
   q('Ending a game','On Home tap <b>End &amp; save game</b> (or use the Stats screen). You\'ll get the final box score with Share, Text, Email and CSV options. It then shows in <b>Past games</b> and <b>Season stats</b>.')+
@@ -1105,7 +1113,7 @@ function render(){
  '<div class="topbar"><button class="teamsw" data-act="home">'+ICON.back+'<i></i><span class="lbl">'+esc(S.team)+'</span></button>'+(inFrame?'<span class="tcount">'+esc(L.opp!=='Opponent'?'vs '+L.opp:niceDate(L.date))+'</span>':'<button class="livepill'+(L.share?' on':'')+'" data-act="share-live">'+(L.share?'LIVE':ICON.live+'Share live')+'</button>')+'</div>'+
  '<header class="sb">'+
   '<div class="tm"><button class="ab us" data-act="team" aria-label="Edit your team"><span class="lbl">'+esc(S.abbr)+'</span>'+ICON.pen+'</button><div class="sc">'+us+'</div><div class="meta">Fouls <b>'+fouls+'</b> · T/O <b>'+tos+'</b></div></div>'+
-  '<div class="mid"><button class="ck'+(L.running?' run':'')+'" data-act="clock"><span class="t" id="clk">'+fmt(L.clockMs)+'</span><span class="pr">'+perShort(L.period)+' · '+(L.running?'Live':'Paused')+'</span></button><button class="ckedit" data-act="clockedit">'+ICON.pen+'Edit clock</button></div>'+
+  '<div class="mid"><button class="ck'+(L.running?' run':'')+'" data-act="clock"><span class="t" id="clk">'+fmt(L.clockMs)+'</span><span class="pr">'+perShort(L.period)+' · '+(L.running?'Live':'Paused')+'</span></button><div class="ckrow"><button class="poss'+(L.poss?' set':'')+'" data-act="poss" aria-label="Possession arrow">'+(L.poss==='opp'?'<span class="pl">POSS</span><span class="pa">▶</span>':L.poss==='us'?'<span class="pa">◀</span><span class="pl">POSS</span>':'◀ POSS ▶')+'</button><button class="ckedit" data-act="clockedit" aria-label="Edit clock">'+ICON.pen+'</button></div></div>'+
   '<div class="tm"><button class="ab" data-act="game" aria-label="Edit opponent"><span class="lbl">'+esc(L.oppAbbr||'OPP')+'</span>'+ICON.pen+'</button><div class="sc">'+them+'</div><div class="meta" title="Opponent fouls '+ofouls+'"><button class="oppb" data-act="opp" data-v="1">+1</button><button class="oppb" data-act="opp" data-v="2">+2</button><button class="oppb" data-act="opp" data-v="3">+3</button></div></div>'+
  '</header>'+body+
  '<nav class="bar"><div class="barin">'+
@@ -1286,6 +1294,7 @@ function clockSheet(){
  '<div class="clkedit"><input id="cm" class="cn" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" value="'+Math.floor(sec/60)+'"><span class="colon2">:</span><input id="cs" class="cn" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" value="'+pad2(sec%60)+'"></div>'+
  '<div class="cnlbl"><span>MIN</span><span>SEC</span></div>'+
  '<div class="scrub" id="scrub"><div class="ticks" id="ticks"></div><div class="needle"></div><div class="scrub-lbl">◀ down · slide · up ▶</div></div>'+
+ '<div class="sec-lbl" style="margin-top:14px">POSSESSION ARROW</div><div class="chips" style="margin-bottom:6px"><button class="'+(L.poss==='us'?'on':'')+'" data-act="poss-set" data-v="us">◀ '+esc(S.abbr)+'</button><button class="'+(L.poss==='opp'?'on':'')+'" data-act="poss-set" data-v="opp">'+esc(L.oppAbbr||'OPP')+' ▶</button><button class="'+(!L.poss?'on':'')+'" data-act="poss-set" data-v="">None</button></div>'+
  '<div class="perrow"><button data-act="per" data-v="-1">−</button><span>'+perLabel(L.period)+'</span><button data-act="per" data-v="1">+</button></div>'+
  '<div class="btns"><button class="btn sec" data-act="clkreset">Reset to '+fmt(full)+'</button><button class="btn sec" data-act="nextper">Next period →</button></div>'+
  '<div class="btns"><button class="btn" data-act="close">Done</button></div>';
@@ -1447,7 +1456,7 @@ function historySheet(){
 }
 
 /* ---------- app updates (installed app) ---------- */
-var APP_VERSION='20261107200526';
+var APP_VERSION='20261107211259';
 function showUpdate(){if(document.getElementById('upd'))return;var b=document.createElement('button');b.id='upd';b.className='upd';b.innerHTML='✨ New version ready · <b>Tap to update</b>';b.onclick=function(){save();location.reload();};document.body.appendChild(b);}
 function checkUpdate(){if(inFrame||APP_VERSION==='dev'||!navigator.onLine)return;fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(j){if(j&&j.v&&j.v!==APP_VERSION)showUpdate();}).catch(function(){});}
 setTimeout(checkUpdate,4000);setInterval(checkUpdate,180000);
@@ -1504,6 +1513,8 @@ document.addEventListener('click',function(e){
  case 'opp':pushEv({type:'OPP',pid:null,v:+d.v});toast('+'+d.v+' – '+oppName());render();break;
  case 'clock':if(L.running)stopClock();else startClock();break;
  case 'clockedit':openClock();break;
+ case 'poss':L.poss=L.poss==='us'?'opp':'us';L.pAt=Date.now();buzz(10);save();render();break;
+ case 'poss-set':L.poss=d.v||null;L.pAt=Date.now();save();refreshSheet();render();break;
  case 'per':L.period=Math.max(1,L.period+(+d.v));markClock();save();refreshSheet();render();break;
  case 'clkreset':setClockSec(S.settings.periodMin*60);save();break;
  case 'nextper':L.period++;L.clockMs=S.settings.periodMin*60000;markClock();save();toast(perLabel(L.period));closeSheet();break;

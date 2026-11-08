@@ -1110,7 +1110,7 @@ function periodNames(){var n=S.settings.periods,a=[];for(var i=1;i<=n;i++)a.push
 function simpleHtml(){
  var us=ourPts(L.events),them=oppPts(L.events),uf=usFoulCount(L.events,L.period),of=cnt(L.events,'OPF',L.period);
  var chips=function(m){var k=Object.keys(m).sort(function(a,b){return (+a)-(+b);});return k.length?k.map(function(n){return '<span class="fchip'+(m[n]>=5?' out':m[n]>=4?' hot':'')+'">#'+esc(n)+'<b>'+m[n]+'</b></span>';}).join(''):'<span class="muted" style="font-size:12.5px">No fouls yet</span>';};
- var pts=function(side){return [1,2,3].map(function(v){return '<button class="spt" data-act="'+(side==='us'?'usp':'opp')+'" data-v="'+v+'">+'+v+'</button>';}).join('');};
+ var pts=function(side){return [3,2,1].map(function(v){return '<button class="spt" data-act="'+(side==='us'?'usp':'opp')+'" data-v="'+v+'">+'+v+'</button>';}).join('');};
  var pn=periodNames(),per=Math.min(L.period,pn.length);
  return '<div class="simple">'+
   '<div class="ssb">'+
@@ -1537,7 +1537,7 @@ function historySheet(){
 }
 
 /* ---------- app updates (installed app) ---------- */
-var APP_VERSION='20261107212401';
+var APP_VERSION='20261107213016';
 function showUpdate(){if(document.getElementById('upd'))return;var b=document.createElement('button');b.id='upd';b.className='upd';b.innerHTML='✨ New version ready · <b>Tap to update</b>';b.onclick=function(){save();location.reload();};document.body.appendChild(b);}
 function checkUpdate(){if(inFrame||APP_VERSION==='dev'||!navigator.onLine)return;fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(j){if(j&&j.v&&j.v!==APP_VERSION)showUpdate();}).catch(function(){});}
 setTimeout(checkUpdate,4000);setInterval(checkUpdate,180000);

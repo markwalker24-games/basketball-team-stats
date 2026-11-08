@@ -530,6 +530,9 @@ input,textarea,select,[contenteditable]{-webkit-user-select:text;user-select:tex
 .fchip.out b{color:#fff}
 .sbig{background:none;border:0;padding:0 10px;border-radius:14px;color:var(--text);cursor:pointer}
 .sbig:active{background:var(--surface2)}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fgrid .tcard{width:auto}
+.fcard .tb2 small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 </style></head><body><div id="root"></div><script type="application/json" id="saved">{"teams":[{"id":"t1","team":"My Team","abbr":"US","roster":[],"games":[],"settings":{"periodMin":8,"periods":4,"v3":1}}],"cur":"t1","rev":0}</script><script id="app">
 (function(){
 'use strict';
@@ -881,8 +884,13 @@ function homeHtml(){
  var rec=S.games.slice(-3).reverse();
  var recent=rec.length?'<div class="hlbl">RECENT GAMES'+(S.games.length>3?'<button data-act="history">See all</button>':'')+'</div><div>'+rec.map(function(g){var r=g.us>g.them?'W':g.us<g.them?'L':'T';
   return '<button class="grow" data-act="hist-open" data-id="'+g.id+'"><span class="gl"><span class="wl '+(r==='L'?'l':r==='T'?'t':'')+'">'+r+'</span><span><b>vs '+esc(g.opp)+'</b><br><span class="muted">'+esc(niceDate(g.date))+'</span></span></span><span class="gs">'+g.us+'–'+g.them+'</span></button>';}).join('')+'</div>':'';
+ var fs=follows(),fwRow=fs.length?'<div class="hlbl">FOLLOWING</div><div class="tcards">'+fs.map(followCard).join('')+'</div>':'';
+ if(fs.length&&ownEmpty())return '<div class="home"><div class="brand"><h1>🏀 Team Stats</h1><button class="qbtn" data-act="help" aria-label="Help">?</button></div>'+
+  '<div class="hlbl">FOLLOWING</div><div class="fgrid">'+fs.map(followCard).join('')+'</div>'+
+  '<p class="muted" style="text-align:center;font-size:13px">Scores update automatically. Tap a team to watch live.</p>'+
+  '<button class="tile" data-act="team" style="min-height:0;flex-direction:row;align-items:center;gap:12px"><span class="ti">'+ICON.users+'</span><span><b style="margin:0">Keep stats for your own team</b><small style="display:block">Set up a roster and start tracking</small></span></button></div>';
  return '<div class="home"><div class="brand"><h1>🏀 Team Stats</h1><button class="qbtn" data-act="help" aria-label="Help">?</button></div>'+
-  '<div class="hlbl">TEAMS<button data-act="teams">Manage</button></div><div class="tcards">'+cards+'</div>'+hero+tiles+recent+
+  '<div class="hlbl">TEAMS<button data-act="teams">Manage</button></div><div class="tcards">'+cards+'</div>'+fwRow+hero+tiles+recent+
   (DB.teams.length>1?'<div class="muted" style="font-size:12px;text-align:center;margin-top:2px">Tip: press and hold a team card, then drag to reorder</div>':'')+'</div>';
 }
 function shareTeamSheet(){
@@ -997,6 +1005,7 @@ function teamViewer2Html(sh){
  var top='';
  if(sh.k)top+=mine?'<div class="invite"><b>You\'re on this team</b><p>'+esc(t.team)+' is already in your app and syncing.</p><button class="btn" data-act="tv-open" style="width:100%;background:#fff;color:var(--ink)">Open in my app</button></div>'
   :'<div class="invite"><b>Join '+esc(t.team)+'</b><p>You\'ve been invited to keep stats. Joining adds the team to your app; stats and roster changes sync with everyone on the team.</p><button class="btn" data-act="tv-join" style="width:100%">Join as contributor</button></div>';
+ if(!mine&&!sh.k&&!inFrame){var fol=isFollowing(sh.id);top+='<button class="btn big'+(fol?' sec':'')+'" data-act="fw-toggle">'+(fol?'★ Following':'⭐ Follow this team')+'</button>'+(fol?'':'<p class="muted" style="text-align:center;margin:-6px 0 0;font-size:12.5px">Adds '+esc(t.team)+' to your Team Stats home screen with live scores.</p>');}
  if(lg)top+='<div class="vtabs"><button class="'+(vwTab==='live'?'on':'')+'" data-act="vw-tab" data-v="live">🔴 Live game</button><button class="'+(vwTab==='team'?'on':'')+'" data-act="vw-tab" data-v="team">Team</button></div>';
  if(lg&&vwTab==='live')return viewerHtml(lg,top);
  o.noImport=true;return teamViewerHtml(o,top);
@@ -1004,7 +1013,7 @@ function teamViewer2Html(sh){
 var vwTab='live';
 function loadTeam2(id,k){
  clearTimeout(pollT);
- var sh=(shared&&shared.kind==='t2'&&shared.id===id)?shared:{kind:'t2',id:id,k:k,core:null,live:null,atC:null,atL:null};
+ var sh=(shared&&shared.kind==='t2'&&shared.id===id)?shared:{kind:'t2',id:id,k:k,core:null,live:null,atC:null,atL:null,fromApp:!!(shared&&shared.fromApp)};
  Promise.all([sbRpc('get_share_since',{p_id:id,p_since:sh.atC}),sbRpc('get_share_since',{p_id:id+'L',p_since:sh.atL})]).then(function(rs){
   var ch=false;
   if(rs[0]){if(rs[0].data){sh.core=rs[0].data;ch=true;}sh.atC=rs[0].updated_at;}
@@ -1083,6 +1092,7 @@ function helpSheet(){
   q('Sharing & live viewing','<b>Share team</b> on Home gives two links. <b>Viewer</b>: anyone can follow live games, box scores and season stats, read-only. <b>Contributor</b>: a co-coach joins and can keep stats and edit the roster; everything syncs. Only share contributor links with people you trust.')+
   q('Multiple teams','Add teams with the <b>+ Add team</b> card on Home. Tap a card to switch; press and hold, then drag to reorder. Each team keeps its own roster, colors, games and stats. <b>Manage</b> lets you delete a team.')+
   q('Installing & offline','Open the app link in Safari (iPhone: Share → Add to Home Screen) or Chrome (Android: ⋮ → Install app). It works offline in the gym and syncs shared teams when you\'re back online.')+
+  q('Following teams','Open a team\'s <b>viewer link</b> and tap <b>⭐ Follow this team</b>. It shows up under <b>Following</b> on your Home screen with live scores during games. Tap it to watch; tap <b>★ Following</b> on its page to unfollow.')+
   q('Moving to a new phone','Shared teams: open your contributor link on the new phone and join. Unshared teams: use <b>Back up / restore</b> at the bottom of the Share sheet.')+
  '</div>';
 }
@@ -1126,6 +1136,29 @@ function simpleHtml(){
    '<div class="sfc"><div class="sfh"><span>'+esc(L.oppAbbr||'OPP')+' FOULS</span><small>this '+(S.settings.periods===2?'half':'period')+'</small></div><div class="sfn">'+of+'</div><button class="sfb" data-act="sfoul" data-v="opp">+ Foul</button><div class="fchips">'+chips(oppFoulCounts(L.events))+'</div></div>'+
   '</div></div>';
 }
+/* ---------- following teams (viewer) ---------- */
+function follows(){DB.follows=DB.follows||[];return DB.follows;}
+function isFollowing(id){return follows().some(function(f){return f.id===id;});}
+var fwData={},fwT=null;
+function refreshFollows(){
+ var fs=follows();if(inFrame||!fs.length)return;
+ Promise.all(fs.map(function(f){var c=fwData[f.id]||(fwData[f.id]={});
+  return Promise.all([sbRpc('get_share_since',{p_id:f.id,p_since:c.atC||null}),sbRpc('get_share_since',{p_id:f.id+'L',p_since:c.atL||null})]).then(function(rs){
+   var ch=false;if(rs[0]){if(rs[0].data){c.core=rs[0].data;ch=true;}c.atC=rs[0].updated_at;}if(rs[1]){if(rs[1].data){c.live=rs[1].data;ch=true;}c.atL=rs[1].updated_at;}
+   if(c.core&&(f.name!==c.core.team||f.abbr!==c.core.abbr)){f.name=c.core.team;f.abbr=c.core.abbr;var st=c.core.settings||{};f.c1=st.accent||f.c1;f.c2=st.accent2||f.c2;saveQuiet();}
+   return ch;}).catch(function(){return false;});})).then(function(r){if(r.some(Boolean)&&view==='home'&&!shared&&!sheetFn)render();});
+}
+setInterval(function(){if(!document.hidden&&view==='home'&&!shared)refreshFollows();},15000);
+setTimeout(refreshFollows,1200);
+function followCard(f){
+ var c=fwData[f.id]||{},status='Loading…',live=false;
+ if(c.core){var t=teamDocAsTeam(c.core,c.live),lg=liveViewData(t);
+  if(lg){live=true;status=lg.u+'–'+lg.m+' · '+(lg.per||'')+(lg.oa?' vs '+lg.oa:'');}
+  else{var g=t.games[t.games.length-1];status=record3(t)+(g?' · '+(g.us>g.them?'W':g.us<g.them?'L':'T')+' '+g.us+'–'+g.them:'');}}
+ var c1=f.c1||'#e8661c',c2=f.c2||'#1f1a17',tx=lum(c1)>0.6?'#1f1a17':'#fff';
+ return '<button class="tcard fcard" data-act="fw-open" data-id="'+f.id+'"><div class="band" style="background:linear-gradient(135deg,'+c1+' 0 72%,'+c2+' 72%);color:'+tx+'">'+esc(f.abbr||'TEAM')+'</div>'+(live?'<span class="livebadge">LIVE</span>':'')+'<div class="tb2"><b>'+esc(f.name||'Team')+'</b><small'+(live?' style="color:#e0392b;font-weight:700"':'')+'>'+esc(status)+'</small></div></button>';
+}
+function ownEmpty(){return DB.teams.every(function(t){return !t.roster.length&&!t.games.length&&!t.live.events.length&&!syncedTeam(t);});}
 /* ---------- main render ---------- */
 function pips(pf){var h='';for(var i=0;i<5;i++)h+='<i'+(i<pf?' class="on"':'')+'></i>';return '<span class="pips'+(pf>=4?' hot':'')+'">'+h+'</span>';}
 function card(p,T){
@@ -1148,6 +1181,7 @@ function render(){
  var dst=document.documentElement.style;dst.setProperty('--opp',L.oppColor);dst.setProperty('--oppTx',lum(L.oppColor)>0.6?'#1f1a17':'#ffffff');
  if(shared){var vsc=root.querySelector('.viewer'),vtop=vsc?vsc.scrollTop:0;
   root.innerHTML=shared.kind==='t2'?teamViewer2Html(shared):shared.kind==='t'?teamViewerHtml(shared):shared.kind==='loading'?stateHtml('Loading…','Getting the latest stats.'):shared.kind==='missing'?stateHtml('Waiting for tip-off','This link goes live as soon as the stat keeper starts sharing. It will update here automatically.'):shared.kind==='error'?stateHtml('Can\'t connect','Check your internet connection. Retrying…'):viewerHtml(shared);
+  if(shared.fromApp)root.innerHTML=root.innerHTML.replace(/Keep your own stats →/g,'‹ My teams');
   var nsc=root.querySelector('.viewer');if(nsc)nsc.scrollTop=vtop;return;}
  if(view==='home'){root.innerHTML=homeHtml();flash=null;return;}
  var T=tally(L.events),us=ourPts(L.events),them=oppPts(L.events);
@@ -1550,7 +1584,7 @@ function historySheet(){
 }
 
 /* ---------- app updates (installed app) ---------- */
-var APP_VERSION='20261107213351';
+var APP_VERSION='20261107222114';
 function showUpdate(){if(document.getElementById('upd'))return;var b=document.createElement('button');b.id='upd';b.className='upd';b.innerHTML='✨ New version ready · <b>Tap to update</b>';b.onclick=function(){save();location.reload();};document.body.appendChild(b);}
 function checkUpdate(){if(inFrame||APP_VERSION==='dev'||!navigator.onLine)return;fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(j){if(j&&j.v&&j.v!==APP_VERSION)showUpdate();}).catch(function(){});}
 setTimeout(checkUpdate,4000);setInterval(checkUpdate,180000);
@@ -1752,7 +1786,13 @@ document.addEventListener('click',function(e){
   clearTimeout(pollT);shared=null;try{history.replaceState(null,'',location.pathname);}catch(x){}
   view='home';DB.view='home';save();render();persist('Joined '+jt.team);break;
  case 'vw-copy':try{navigator.clipboard.writeText(location.href).then(function(){toast('Link copied');},function(){toast('Copy from the address bar');});}catch(x){toast('Copy from the address bar');}break;
- case 'vw-app':shared=null;clearTimeout(pollT);try{history.replaceState(null,'',location.pathname);}catch(x){location.hash='';}render();break;
+ case 'fw-toggle':
+  var sf=shared;if(!sf||sf.kind!=='t2')break;var fsl=follows();
+  if(isFollowing(sf.id)){DB.follows=fsl.filter(function(f){return f.id!==sf.id;});toast('Unfollowed');}
+  else{var cs0=(sf.core&&sf.core.settings)||{};fsl.push({id:sf.id,name:sf.core?sf.core.team:'Team',abbr:sf.core?sf.core.abbr:'',c1:cs0.accent,c2:cs0.accent2,at:Date.now()});fwData[sf.id]={core:sf.core,live:sf.live,atC:sf.atC,atL:sf.atL};toast('Following '+(sf.core?sf.core.team:'team')+' · it\'s on your home screen');}
+  save();render();break;
+ case 'fw-open':clearTimeout(pollT);vwTab='live';shared={kind:'loading',fromApp:true};render();loadTeam2(d.id,null);break;
+ case 'vw-app':if(shared&&shared.fromApp){shared=null;clearTimeout(pollT);go('home');refreshFollows();break;}shared=null;clearTimeout(pollT);try{history.replaceState(null,'',location.pathname);}catch(x){location.hash='';}render();break;
  case 'send-share':if(!inFrame){if(viewGame)ensurePastShare(viewGame);else if(L.events.length)ensureGameShare();}
   var gs=curGame(),st=boxText(gs),data={title:gs.team+' vs '+gs.opp,text:st};
   try{var f=new File([boxCsv(gs)],fileName(gs,'csv'),{type:'text/csv'});if(navigator.canShare&&navigator.canShare({files:[f]}))data.files=[f];}catch(x){}

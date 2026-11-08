@@ -288,6 +288,30 @@ textarea.cp{width:100%;height:160px;font-size:13px;border:1px solid var(--line2)
 .menu .trow .tpick{flex:1;min-width:0}
 .menu .trow .tdel{width:50px;flex:none;justify-content:center;align-items:center;padding:0;background:#fbeee6;border-color:#f3d6c8;color:var(--miss)}
 .menu .trow .tdel svg{width:19px;height:19px}
+.viewer{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 14px calc(26px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:14px}
+.viewer>*,.home>*{flex:none}
+.vsb.nost::before{display:none}
+.vbrand{display:flex;align-items:center;justify-content:space-between;font:800 18px var(--cond);letter-spacing:.5px;color:var(--muted)}
+.vbrand a,.vbrand button{font:600 13px Inter;color:var(--accent);text-decoration:none}
+.vsb{background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:18px 12px 16px;box-shadow:0 10px 28px rgba(90,50,20,.10);position:relative;overflow:hidden;text-align:center}
+.vsb::before{content:"";position:absolute;left:0;right:0;top:0;height:6px;background:linear-gradient(90deg,var(--p) 0 40%,var(--accent2) 40% 49.5%,transparent 49.5% 50.5%,var(--opp) 50.5%)}
+.vsb .st{font-size:11px;font-weight:700;letter-spacing:1.4px;color:var(--muted);text-transform:uppercase}
+.vsb .row{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;margin-top:10px}
+.vsb .tn{font:700 16px var(--cond);letter-spacing:1px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 4px}
+.vsb .vbig{font:800 64px/1 var(--cond);font-variant-numeric:tabular-nums;margin-top:2px}
+.vsb .vbig.dim{color:#a99b8e}
+.vsb .dash{font:800 30px var(--cond);color:var(--line2)}
+.vsb .res{display:inline-block;margin-top:10px;font:700 13px var(--cond);letter-spacing:1.5px;padding:4px 12px;border-radius:999px;background:var(--ink);color:#fff}
+.tops{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.topc{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:12px 6px 10px;text-align:center;box-shadow:0 3px 10px rgba(90,50,20,.06)}
+.topc .jz{width:52px;margin:0 auto}
+.topc b{display:block;font-size:13.5px;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topc .pp{font:800 26px/1.1 var(--cond);color:var(--ball-d)}
+.topc small{display:block;color:var(--muted);font-size:11.5px}
+.vcard{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:12px 14px;box-shadow:0 3px 10px rgba(90,50,20,.06)}
+.vcard .box .nm{background:var(--surface)}
+.vfoot{text-align:center;color:var(--muted);font-size:12.5px;line-height:1.5}
+.linkbox{width:100%;font-size:13px;border:1px solid var(--line2);border-radius:11px;padding:10px;background:#fff;color:var(--text);margin-top:8px}
 /* ---- fit-to-screen layout (no scrolling) ---- */
 html,body{height:100%;overflow:hidden}
 #root{height:100vh;height:100dvh;min-height:0;padding-top:env(safe-area-inset-top);overflow:hidden}
@@ -548,12 +572,97 @@ function seasonSheet(){
  var P=seasonData(S),rows=Object.keys(P).map(function(id){return P[id];}).sort(function(a,b){return b.s.pts/b.gp-a.s.pts/a.gp;});
  var gp=S.games.length,pf=S.games.reduce(function(a,g){return a+g.us;},0),pa=S.games.reduce(function(a,g){return a+g.them;},0);
  var f1=function(n,d){return d?(n/d).toFixed(1):'–';};
- return head('Season stats')+
+ prepTeamLink();
+ return head('Season stats')+'<button class="btn big" data-act="share-team" style="margin-bottom:12px">Share team link</button>'+(linkShown?'<textarea class="linkbox" readonly rows="3" style="margin:0 0 12px">'+esc(linkShown)+'</textarea>':'')+
  (gp?'<div class="kpis" style="margin:0 0 12px"><div class="kpi"><b>'+record3(S)+'</b><small>Record</small></div><div class="kpi"><b>'+f1(pf,gp)+'</b><small>Points / game</small></div><div class="kpi"><b>'+f1(pa,gp)+'</b><small>Allowed / game</small></div></div>'+
  '<div class="tw"><table class="box"><thead><tr><th class="nm">PLAYER</th><th>GP</th><th>PPG</th><th>RPG</th><th>APG</th><th>SPG</th><th>FG%</th><th>3PM</th><th>FT%</th><th>PTS</th><th>PF</th></tr></thead><tbody>'+
  rows.map(function(r){var s=r.s;return '<tr><td class="nm"><b>'+esc(r.num)+'</b>'+esc(r.name)+'</td><td>'+r.gp+'</td><td class="pts">'+f1(s.pts,r.gp)+'</td><td>'+f1(s.orb+s.drb,r.gp)+'</td><td>'+f1(s.ast,r.gp)+'</td><td>'+f1(s.stl,r.gp)+'</td><td>'+pct(s.fgm,s.fga)+'</td><td>'+s.tpm+'</td><td>'+pct(s.ftm,s.fta)+'</td><td>'+s.pts+'</td><td>'+s.pf+'</td></tr>';}).join('')+
  '</tbody></table></div><p class="muted">Averages are per game played, from '+gp+' saved game'+(gp===1?'':'s')+'.</p>'
  :'<p class="muted">Season stats build up from your saved games. Finish a game with “End &amp; save” and it shows up here.</p>');
+}
+/* ---------- share links (game packed into the URL; nothing uploaded) ---------- */
+var SHARE_BASE='https://markwalker24-games.github.io/basketball-team-stats/';
+function b64u(bytes){var str='';for(var i=0;i<bytes.length;i++)str+=String.fromCharCode(bytes[i]);return btoa(str).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
+function unb64u(str){str=str.replace(/-/g,'+').replace(/_/g,'/');while(str.length%4)str+='=';var x=atob(str),b=new Uint8Array(x.length);for(var i=0;i<x.length;i++)b[i]=x.charCodeAt(i);return b;}
+function pipeBytes(bytes,ts){return new Response(new Blob([bytes]).stream().pipeThrough(ts)).arrayBuffer().then(function(ab){return new Uint8Array(ab);});}
+function packGame(g,isFinal){
+ var T=tally(g.events),r=sortRoster(g.roster);
+ return {v:1,t:g.team,a:S.abbr,o:g.opp,oa:g.oppAbbr||'OPP',d:g.date,f:isFinal?1:0,
+  c:[S.settings.accent,S.settings.accent2,g.oppColor||'#1f1a17'],u:ourPts(g.events),m:oppPts(g.events),
+  p:r.filter(function(p){return T[p.id]||(g.mins&&g.mins[p.id]);}).map(function(p){var x=T[p.id]||blank();return [p.num,p.name,Math.round(((g.mins&&g.mins[p.id])||0)/1000),x.pts,x.fgm,x.fga,x.tpm,x.tpa,x.ftm,x.fta,x.orb,x.drb,x.ast,x.stl,x.blk,x.to,x.pf];}),
+  of:oppFoulCounts(g.events),tf:cnt(g.events,'PF'),tt:cnt(g.events,'TOUT'),ofc:cnt(g.events,'OPF'),ot:cnt(g.events,'OTOUT')};
+}
+function encodeLink(key,obj){
+ var bytes=new TextEncoder().encode(JSON.stringify(obj));
+ var done=function(pfx,b){return SHARE_BASE+'#'+key+'='+pfx+b64u(b);};
+ if(typeof CompressionStream==='function'){return pipeBytes(bytes,new CompressionStream('deflate-raw')).then(function(z){return done('z',z);}).catch(function(){return done('j',bytes);});}
+ return Promise.resolve(done('j',bytes));
+}
+function packTeam(t){
+ var P=seasonData(t);
+ return {v:1,n:t.team,a:t.abbr,c:[t.settings.accent,t.settings.accent2],pm:t.settings.periodMin,pd:t.settings.periods,
+  r:sortRoster(t.roster).map(function(p){return [p.num,p.name];}),
+  g:t.games.map(function(g){return [g.date,g.opp,g.us,g.them];}),
+  s:Object.keys(P).map(function(id){var r=P[id],x=r.s;return [r.num,r.name,r.gp,x.pts,x.orb+x.drb,x.ast,x.stl,x.fgm,x.fga,x.tpm,x.ftm,x.fta];})};
+}
+function makeTeamLink(t){return encodeLink('t',packTeam(t));}
+function makeLink(g,isFinal){
+ var bytes=new TextEncoder().encode(JSON.stringify(packGame(g,isFinal)));
+ var done=function(pfx,b){return SHARE_BASE+'#s='+pfx+b64u(b);};
+ if(typeof CompressionStream==='function'){return pipeBytes(bytes,new CompressionStream('deflate-raw')).then(function(z){return done('z',z);}).catch(function(){return done('j',bytes);});}
+ return Promise.resolve(done('j',bytes));
+}
+function readLink(h){
+ var m=/^#([st])=([zj])([A-Za-z0-9_-]+)$/.exec(h||'');if(!m)return Promise.resolve(null);
+ var kind=m[1],bytes;try{bytes=unb64u(m[3]);}catch(e){return Promise.resolve(null);}
+ var p=m[2]==='z'?(typeof DecompressionStream==='function'?pipeBytes(bytes,new DecompressionStream('deflate-raw')):Promise.reject()):Promise.resolve(bytes);
+ return p.then(function(b){var o=JSON.parse(new TextDecoder().decode(b));if(o&&o.v===1){o.kind=kind;return o;}return null;}).catch(function(){return null;});
+}
+var linkCache={},shared=null,teamLink=null,teamLinkKey='';
+function prepTeamLink(){var k=S.id+':'+S.roster.length+':'+S.games.length+':'+S.team;if(teamLinkKey===k&&teamLink)return;teamLinkKey=k;teamLink=null;makeTeamLink(S).then(function(u){if(teamLinkKey===k)teamLink=u;});}
+function gameKey(g){return (g.id||L.id)+':'+g.events.length+':'+(g.opp||'')+':'+(viewGame?1:0);}
+function prepLink(g){var k=gameKey(g);if(linkCache[k])return;linkCache[k]='…';makeLink(g,!!viewGame).then(function(u){linkCache[k]=u;});}
+function linkFor(g){var u=linkCache[gameKey(g)];return u&&u!=='…'?u:null;}
+function teamViewerHtml(o){
+ var st=document.documentElement.style;st.setProperty('--p',o.c[0]);st.setProperty('--accent2',o.c[1]);st.setProperty('--accent',uiAccent(o.c[0],o.c[1]));
+ var w=0,l=0;o.g.forEach(function(g){if(g[2]>g[3])w++;else if(g[2]<g[3])l++;});
+ var tx=lum(o.c[0])>0.6?'#1f1a17':'#fff';
+ var f1=function(n,d){return d?(n/d).toFixed(1):'–';};
+ var S2=o.s.slice().sort(function(a,b){return b[3]/b[2]-a[3]/a[2];});
+ var mine=DB.teams.some(function(t){return t.team===o.n;});
+ return '<div class="viewer">'+
+  '<div class="vbrand"><span>🏀 TEAM STATS</span><button data-act="vw-app">Keep your own stats →</button></div>'+
+  '<div class="vsb nost" style="padding:0;text-align:left"><div style="background:linear-gradient(135deg,'+o.c[0]+' 0 74%,'+o.c[1]+' 74%);color:'+tx+';padding:18px 16px 14px"><div style="font:800 34px/1 var(--cond);letter-spacing:.5px">'+esc(o.n)+'</div><div style="font:700 14px var(--cond);letter-spacing:2px;opacity:.85;margin-top:4px">'+esc(o.a)+' · '+o.r.length+' PLAYERS</div></div>'+
+  '<div style="display:grid;grid-template-columns:repeat(3,1fr);text-align:center;padding:12px 4px"><div><b style="font:800 28px var(--cond)">'+w+'–'+l+'</b><div class="muted" style="font-size:11.5px">Record</div></div><div><b style="font:800 28px var(--cond)">'+o.g.length+'</b><div class="muted" style="font-size:11.5px">Games</div></div><div><b style="font:800 28px var(--cond)">'+f1(o.g.reduce(function(a,g){return a+g[2];},0),o.g.length)+'</b><div class="muted" style="font-size:11.5px">Points / game</div></div></div></div>'+
+  '<button class="btn big" data-act="tv-import">'+(mine?'Add another copy to my app':'Add this team to my app')+'</button>'+
+  '<div class="hlbl">ROSTER</div><div class="vcard"><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px 4px">'+o.r.map(function(p){return '<div style="text-align:center"><span class="jz" style="width:46px;margin:0 auto">'+jersey(p[0],o.c[0],o.c[1])+'</span><div style="font-size:12px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(p[1])+'</div></div>';}).join('')+'</div></div>'+
+  (S2.length?'<div class="hlbl">SEASON STATS</div><div class="vcard"><div class="tw" style="margin:0 -14px;padding:0 14px"><table class="box"><thead><tr><th class="nm">PLAYER</th><th>GP</th><th>PPG</th><th>RPG</th><th>APG</th><th>SPG</th><th>FG%</th><th>3PM</th><th>FT%</th></tr></thead><tbody>'+
+   S2.map(function(x){return '<tr><td class="nm"><b>'+esc(x[0])+'</b>'+esc(x[1])+'</td><td>'+x[2]+'</td><td class="pts">'+f1(x[3],x[2])+'</td><td>'+f1(x[4],x[2])+'</td><td>'+f1(x[5],x[2])+'</td><td>'+f1(x[6],x[2])+'</td><td>'+pct(x[7],x[8])+'</td><td>'+x[9]+'</td><td>'+pct(x[10],x[11])+'</td></tr>';}).join('')+'</tbody></table></div></div>':'')+
+  (o.g.length?'<div class="hlbl">RESULTS</div><div>'+o.g.slice().reverse().map(function(g){var r=g[2]>g[3]?'W':g[2]<g[3]?'L':'T';return '<div class="grow"><span class="gl"><span class="wl '+(r==='L'?'l':r==='T'?'t':'')+'">'+r+'</span><span><b>vs '+esc(g[1])+'</b><br><span class="muted">'+esc(niceDate(g[0]))+'</span></span></span><span class="gs">'+g[2]+'–'+g[3]+'</span></div>';}).join('')+'</div>':'')+
+  '<div class="btns" style="margin-top:0"><button class="btn sec" data-act="vw-copy">Copy link</button></div>'+
+  '<div class="vfoot">“Add this team” copies the name, colors and roster into your own Team Stats. Stats you keep stay on your phone.</div>'+
+ '</div>';
+}
+function viewerHtml(o){
+ var st=document.documentElement.style;st.setProperty('--p',o.c[0]);st.setProperty('--accent2',o.c[1]);st.setProperty('--opp',o.c[2]);st.setProperty('--accent',uiAccent(o.c[0],o.c[1]));
+ var P=o.p.map(function(a){return {num:a[0],name:a[1],sec:a[2],pts:a[3],fgm:a[4],fga:a[5],tpm:a[6],tpa:a[7],ftm:a[8],fta:a[9],orb:a[10],drb:a[11],ast:a[12],stl:a[13],blk:a[14],to:a[15],pf:a[16]};});
+ var t=P.reduce(function(acc,x){for(var k in x)if(typeof x[k]==='number')acc[k]=(acc[k]||0)+x[k];return acc;},{});
+ var res=o.u>o.m?'WIN':o.u<o.m?'LOSS':'TIE';
+ var tops=P.slice().sort(function(a,b){return (b.pts-a.pts)||((b.orb+b.drb+b.ast)-(a.orb+a.drb+a.ast));}).slice(0,3);
+ var line=function(x){var b=[];if(x.orb+x.drb)b.push((x.orb+x.drb)+' reb');if(x.ast)b.push(x.ast+' ast');if(x.stl)b.push(x.stl+' stl');return b.slice(0,2).join(' · ')||'&nbsp;';};
+ var rows=P.map(function(x){return '<tr><td class="nm"><b>'+esc(x.num)+'</b>'+esc(x.name)+'</td><td>'+(x.sec?Math.floor(x.sec/60)+':'+pad2(x.sec%60):'–')+'</td><td class="pts">'+x.pts+'</td><td>'+x.fgm+'-'+x.fga+'</td><td>'+x.tpm+'-'+x.tpa+'</td><td>'+x.ftm+'-'+x.fta+'</td><td>'+(x.orb+x.drb)+'</td><td>'+x.ast+'</td><td>'+x.stl+'</td><td>'+x.blk+'</td><td>'+x.to+'</td><td>'+x.pf+'</td></tr>';}).join('');
+ var ofk=Object.keys(o.of||{}).sort(function(a,b){return (+a)-(+b);});
+ return '<div class="viewer">'+
+  '<div class="vbrand"><span>🏀 TEAM STATS</span><button data-act="vw-app">Keep your own stats →</button></div>'+
+  '<div class="vsb"><div class="st">'+(o.f?'Final':'In progress')+' · '+esc(niceDate(o.d))+'</div><div class="row"><div><div class="tn">'+esc(o.t)+'</div><div class="vbig'+(o.u<o.m?' dim':'')+'">'+o.u+'</div></div><div class="dash">–</div><div><div class="tn">'+esc(o.o)+'</div><div class="vbig'+(o.m<o.u?' dim':'')+'">'+o.m+'</div></div></div>'+(o.f?'<span class="res">'+res+'</span>':'')+'</div>'+
+  (tops.length&&tops[0].pts?'<div class="hlbl">TOP PERFORMERS</div><div class="tops">'+tops.map(function(x){return '<div class="topc"><span class="jz">'+jersey(x.num,o.c[0],o.c[1])+'</span><b>'+esc(x.name)+'</b><div class="pp">'+x.pts+'<span style="font-size:13px"> PTS</span></div><small>'+line(x)+'</small></div>';}).join('')+'</div>':'')+
+  '<div class="hlbl">BOX SCORE</div><div class="vcard"><div class="tw" style="margin:0 -14px;padding:0 14px"><table class="box"><thead><tr><th class="nm">PLAYER</th><th>MIN</th><th>PTS</th><th>FG</th><th>3PT</th><th>FT</th><th>REB</th><th>AST</th><th>STL</th><th>BLK</th><th>TO</th><th>PF</th></tr></thead><tbody>'+rows+'</tbody>'+
+  '<tfoot><tr><td class="nm">Team</td><td></td><td class="pts">'+(t.pts||0)+'</td><td>'+(t.fgm||0)+'-'+(t.fga||0)+'</td><td>'+(t.tpm||0)+'-'+(t.tpa||0)+'</td><td>'+(t.ftm||0)+'-'+(t.fta||0)+'</td><td>'+((t.orb||0)+(t.drb||0))+'</td><td>'+(t.ast||0)+'</td><td>'+(t.stl||0)+'</td><td>'+(t.blk||0)+'</td><td>'+(t.to||0)+'</td><td>'+(t.pf||0)+'</td></tr></tfoot></table></div></div>'+
+  '<div class="kpis" style="margin-top:0"><div class="kpi"><b>'+pct(t.fgm||0,t.fga||0)+'</b><small>FG</small></div><div class="kpi"><b>'+pct(t.tpm||0,t.tpa||0)+'</b><small>3PT</small></div><div class="kpi"><b>'+pct(t.ftm||0,t.fta||0)+'</b><small>FT</small></div></div>'+
+  '<div class="vcard" style="font-size:14px"><b>'+esc(o.t)+'</b> · Fouls '+o.tf+' · Timeouts '+o.tt+'<div style="height:6px"></div><b>'+esc(o.o)+'</b> · Fouls '+o.ofc+' · Timeouts '+o.ot+(ofk.length?'<div class="qn" style="margin-top:8px">'+ofk.map(function(k){return '<span class="c">#'+esc(k)+'<em>'+o.of[k]+'</em></span>';}).join('')+'</div>':'')+'</div>'+
+  '<div class="btns" style="margin-top:0"><button class="btn sec" data-act="vw-copy">Copy link</button><button class="btn" data-act="vw-app">Open Team Stats</button></div>'+
+  '<div class="vfoot">Shared from Team Stats. This page is built from the link itself; nothing is stored online.</div>'+
+ '</div>';
 }
 /* ---------- main render ---------- */
 function pips(pf){var h='';for(var i=0;i<5;i++)h+='<i'+(i<pf?' class="on"':'')+'></i>';return '<span class="pips'+(pf>=4?' hot':'')+'">'+h+'</span>';}
@@ -575,6 +684,7 @@ function ac(t,lbl,sub,cls){return '<button class="ac'+(cls?' '+cls:'')+pd(t)+'" 
 function render(){
  applyAccent();
  var dst=document.documentElement.style;dst.setProperty('--opp',L.oppColor);dst.setProperty('--oppTx',lum(L.oppColor)>0.6?'#1f1a17':'#ffffff');
+ if(shared){root.innerHTML=shared.kind==='t'?teamViewerHtml(shared):viewerHtml(shared);return;}
  if(view==='home'){root.innerHTML=homeHtml();flash=null;return;}
  var T=tally(L.events),us=ourPts(L.events),them=oppPts(L.events);
  var fouls=cnt(L.events,'PF',L.period),tos=cnt(L.events,'TOUT'),ofouls=cnt(L.events,'OPF',L.period),otos=cnt(L.events,'OTOUT');
@@ -734,7 +844,7 @@ function syncTD(){
  document.querySelectorAll('#rr input').forEach(function(inp){TD.roster[+inp.dataset.i][inp.dataset.f]=inp.value;});
 }
 function teamSheet(){
- return head('Your team')+'<p class="muted" style="margin:-6px 0 12px">Changes save automatically.</p>'+
+ return head('Your team')+'<p class="muted" style="margin:-6px 0 12px">Changes save automatically. <button data-act="share-team" style="color:var(--accent);font-weight:700">Share this team →</button></p>'+(linkShown?'<textarea class="linkbox" readonly rows="3" style="margin:0 0 12px">'+esc(linkShown)+'</textarea>':'')+
  '<div class="two"><label class="fld">Team name<input id="t-team" value="'+esc(TD.team)+'" placeholder="My Team"></label>'+
  '<label class="fld">Scoreboard name<input id="t-abbr" maxlength="5" value="'+esc(TD.abbr)+'" placeholder="US"></label></div>'+
  '<div style="display:flex;gap:14px;align-items:flex-start"><div style="flex:1"><div class="fld" style="margin-bottom:0">Primary color</div><div class="sw">'+ACCENTS.map(function(c){return '<button data-act="accent" data-v="'+c+'" class="'+(c===TD.accent?'on':'')+'" style="background:'+c+'" aria-label="Primary '+c+'"></button>';}).join('')+'</div>'+
@@ -862,6 +972,7 @@ function boxText(g){
   out.push('#'+p.num+' '+p.name+' — '+bits.join(' · '));});
  var m=oppFoulCounts(g.events);
  out.push('','Fouls: '+g.team+' '+cnt(g.events,'PF')+' · '+g.opp+' '+cnt(g.events,'OPF')+(Object.keys(m).length?' ('+Object.keys(m).map(function(k){return '#'+k+'×'+m[k];}).join(', ')+')':''));
+ var lk=linkFor(g);if(lk)out.push('','Full box score: '+lk);
  return out.join('\n');
 }
 function boxCsv(g){
@@ -871,21 +982,23 @@ function boxCsv(g){
  r.forEach(function(p){var s=T[p.id]||blank();lines.push([p.num,p.name,fmtMin(g.mins[p.id]||0),s.pts,s.fgm,s.fga,s.tpm,s.tpa,s.ftm,s.fta,s.orb,s.drb,s.orb+s.drb,s.ast,s.stl,s.blk,s.to,s.pf].map(q).join(','));});
  return lines.join('\n');
 }
-var viewGame=null,copyFallback=false,finalMode=false,finalPersist=false;
+var linkShown=null,viewGame=null,copyFallback=false,finalMode=false,finalPersist=false;
 var canShare=!!(navigator.share)&&!inFrame;
 function curGame(){return viewGame||liveGame();}
 function fileName(g,ext){return (g.team+' vs '+g.opp+' '+g.date).replace(/[^\w\- ]+/g,'').replace(/\s+/g,'_')+'.'+ext;}
 function boxSheet(){
  var g=viewGame||liveGame(),us=ourPts(g.events),them=oppPts(g.events);
+ prepLink(g);
  return head(finalMode?'Final':(viewGame?'vs '+esc(g.opp):'Box score'))+
  (finalMode?'<p class="muted" style="margin:-6px 0 12px">Game saved to Past games. Send the stats, then tap Done to start a fresh game.</p>':'')+
  '<div class="final"><div><small>'+esc(g.team)+'</small><b style="color:'+(us>=them?'var(--text)':'var(--muted)')+'">'+us+'</b></div><div style="align-items:center"><small>'+esc(g.date)+'</small><span class="muted">'+(viewGame?'Final':'Live')+'</span></div><div class="r"><small>'+esc(g.opp)+'</small><b style="color:'+(them>us?'var(--text)':'var(--muted)')+'">'+them+'</b></div></div>'+
  boxTable(g)+oppSection(g)+
  '<div class="btns"><button class="btn sec" data-act="copybox">Copy as text</button>'+(canDownload()?'<button class="btn sec" data-act="csv">Download CSV</button>':'')+'</div>'+
- '<div class="sec-lbl">SEND STATS</div><div class="btns" style="margin-top:0">'+
+ '<div class="sec-lbl">SEND STATS</div><button class="btn big" data-act="send-link" style="margin-bottom:8px">Share link to results</button><div class="btns" style="margin-top:0">'+
   (canShare?'<button class="btn" data-act="send-share">Share…</button>':'')+
   (!inFrame?'<button class="btn'+(canShare?' sec':'')+'" data-act="send-sms">Text</button><button class="btn sec" data-act="send-email">Email</button>':'<button class="btn" data-act="copybox">Copy summary to paste in a text</button>')+
  '</div>'+(inFrame?'<p class="muted">In the installed app you can also send straight to Messages, email or any app.</p>':'')+
+ (linkShown?'<p class="muted" style="margin:8px 0 0">Copy this link:</p><textarea class="linkbox" readonly rows="3">'+esc(linkShown)+'</textarea>':'')+
  (copyFallback?'<p class="muted">Copy didn\'t work here — select the text below:</p><textarea class="cp" readonly>'+esc(boxText(g))+'</textarea>':'')+
  (finalMode?'<div class="btns"><button class="btn" data-act="done">Done</button></div>':(!viewGame&&L.events.length?'<div class="btns"><button class="btn sec" data-act="endgame">End game &amp; save</button></div>':'')+(viewGame?'<div class="btns"><button class="btn sec" data-act="history">← Past games</button><button class="btn danger" data-act="hist-del">Delete game</button></div>':''));
 }
@@ -948,9 +1061,9 @@ document.addEventListener('click',function(e){
  case 'sub':subMode=!subMode;sel=null;pending=null;render();break;
  case 'menu':case 'home':go('home');break;
  case 'resume':go('game');break;
- case 'season':openSheet(seasonSheet);break;
+ case 'season':linkShown=null;openSheet(seasonSheet);break;
  case 'newgame':startMode=true;L.date=today();save();openSheet(gameSheet);break;
- case 'box':viewGame=null;finalMode=false;copyFallback=false;openSheet(boxSheet);break;
+ case 'box':viewGame=null;finalMode=false;copyFallback=false;linkShown=null;openSheet(boxSheet);break;
  case 'log':openSheet(logSheet);break;
  case 'logdel':L.events=L.events.filter(function(x){return x.id!==d.id;});save();refreshSheet();render();break;
  case 'close':closeSheet();break;
@@ -961,7 +1074,7 @@ document.addEventListener('click',function(e){
   L.oppAbbr=(document.getElementById('g-abbr').value.trim()||L.opp.slice(0,3)).toUpperCase();
   L.date=document.getElementById('g-date').value||today();save();closeSheet();break;
  case 'done':if(startMode)startGo=true;closeSheet();break;
- case 'team':openTeam();break;
+ case 'team':linkShown=null;openTeam();break;
  case 'accent':syncTD();TD.accent=d.v;applyTD();refreshSheet();break;
  case 'accent2':syncTD();TD.accent2=d.v;applyTD();refreshSheet();break;
  case 'r-add':syncTD();TD.roster.push({id:uid(),num:'',name:''});refreshSheet();var ins=ov.querySelectorAll('.rrow .n');if(ins.length)ins[ins.length-1].focus();break;
@@ -981,7 +1094,7 @@ document.addEventListener('click',function(e){
   if(!L.onCourt.length)L.onCourt=ids.slice(0,5);
   break;
  case 'history':viewGame=null;openSheet(historySheet);break;
- case 'hist-open':finalMode=false;viewGame=S.games.filter(function(g){return g.id===d.id;})[0]||null;copyFallback=false;if(viewGame)openSheet(boxSheet);break;
+ case 'hist-open':finalMode=false;linkShown=null;viewGame=S.games.filter(function(g){return g.id===d.id;})[0]||null;copyFallback=false;if(viewGame)openSheet(boxSheet);break;
  case 'hist-del':openSheet(confirmSheet('Delete this game?','The box score for '+esc(viewGame.date)+' vs '+esc(viewGame.opp)+' will be removed for good.','hist-del-yes','Delete',true));break;
  case 'hist-del-yes':var gid=viewGame&&viewGame.id;S.games=S.games.filter(function(g){return g.id!==gid;});viewGame=null;closeSheet();persist('Game deleted');break;
  case 'endgame':openSheet(confirmSheet('End game?','Final: '+esc(S.team)+' '+ourPts(L.events)+' – '+esc(L.opp)+' '+oppPts(L.events)+'. The box score goes to Past games and a fresh game starts.','endgame-yes','End &amp; save'));break;
@@ -1004,6 +1117,32 @@ document.addEventListener('click',function(e){
   DB.teams.forEach(function(t){t.id=t.id||uid();normalize(t);});
   S=DB.teams.filter(function(t){return t.id===DB.cur;})[0]||DB.teams[0];DB.cur=S.id;L=S.live;sel=null;pending=null;subMode=false;
   closeSheet();persist('Backup restored');break;
+ case 'send-link':
+  var gl=curGame(),u=linkFor(gl);
+  var deliver=function(u){
+   if(canShare){navigator.share({title:gl.team+' '+ourPts(gl.events)+', '+gl.opp+' '+oppPts(gl.events),text:gl.team+' vs '+gl.opp+' box score',url:u}).catch(function(){});return;}
+   try{navigator.clipboard.writeText(u).then(function(){toast('Link copied');},function(){linkShown=u;refreshSheet();});}catch(x){linkShown=u;refreshSheet();}
+  };
+  if(u)deliver(u);else makeLink(gl,!!viewGame).then(function(u2){linkCache[gameKey(gl)]=u2;linkShown=u2;refreshSheet();toast('Link ready');});
+  break;
+ case 'share-team':
+  if(sheetFn===teamSheet){syncTD();applyTD();}
+  var tdeliver=function(u){
+   if(canShare){navigator.share({title:S.team+' · Team Stats',text:S.team+' roster & season stats',url:u}).catch(function(){});return;}
+   try{navigator.clipboard.writeText(u).then(function(){toast('Team link copied');},function(){linkShown=u;refreshSheet();});}catch(x){linkShown=u;refreshSheet();}
+  };
+  prepTeamLink();
+  if(teamLink)tdeliver(teamLink);else makeTeamLink(S).then(function(u){teamLink=u;linkShown=u;refreshSheet();toast('Link ready');});
+  break;
+ case 'tv-import':
+  var o=shared;if(!o||o.kind!=='t')break;
+  var used=DB.teams.map(function(t){return t.settings.accent;});
+  var nt=normalize({id:uid(),team:o.n,abbr:o.a||'US',roster:o.r.map(function(p){return {id:uid(),num:String(p[0]),name:String(p[1])};}),games:[],settings:{periodMin:o.pm||S.settings.periodMin,periods:o.pd||S.settings.periods,v3:1,accent:o.c[0],accent2:o.c[1]}});
+  DB.teams.push(nt);switchTeam(nt.id);shared=null;
+  try{history.replaceState(null,'',location.pathname+location.search);}catch(x){location.hash='';}
+  view='home';DB.view='home';render();persist(o.n+' added');break;
+ case 'vw-copy':try{navigator.clipboard.writeText(location.href).then(function(){toast('Link copied');},function(){toast('Copy from the address bar');});}catch(x){toast('Copy from the address bar');}break;
+ case 'vw-app':shared=null;try{history.replaceState(null,'',location.pathname+location.search);}catch(x){location.hash='';}render();break;
  case 'send-share':
   var gs=curGame(),st=boxText(gs),data={title:gs.team+' vs '+gs.opp,text:st};
   try{var f=new File([boxCsv(gs)],fileName(gs,'csv'),{type:'text/csv'});if(navigator.canShare&&navigator.canShare({files:[f]}))data.files=[f];}catch(x){}
@@ -1023,6 +1162,7 @@ document.addEventListener('click',function(e){
 });
 
 if(!L.onCourt.length&&S.roster.length)L.onCourt=S.roster.slice(0,5).map(function(p){return p.id;});
+if(/^#[st]=/.test(location.hash)){readLink(location.hash).then(function(o){if(o){shared=o;render();}else{toast('That link looks incomplete');}});}
 render();
 })();
 </script></body></html>

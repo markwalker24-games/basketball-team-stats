@@ -478,6 +478,8 @@ html,body{height:100%;overflow:hidden}
 .sj.open .jz{opacity:.55}
 .sj.new{animation:slotin .22s ease-out}
 @keyframes slotin{from{transform:translateY(14px) scale(.9);opacity:.4}to{transform:none;opacity:1}}
+.upd{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(86px + env(safe-area-inset-bottom));z-index:40;background:var(--ink);color:#fff;border-radius:999px;padding:11px 18px;font:600 14px Inter;box-shadow:0 10px 26px rgba(31,26,23,.35);white-space:nowrap;animation:up .25s ease-out}
+.upd b{color:#ffb04a}
 </style></head><body><div id="root"></div><script type="application/json" id="saved">{"teams":[{"id":"t1","team":"My Team","abbr":"US","roster":[],"games":[],"settings":{"periodMin":8,"periods":4,"v3":1}}],"cur":"t1","rev":0}</script><script id="app">
 (function(){
 'use strict';
@@ -1444,6 +1446,12 @@ function historySheet(){
   return '<button class="grow" data-act="hist-open" data-id="'+g.id+'"><span class="gl"><span class="wl '+(r==='L'?'l':r==='T'?'t':'')+'">'+r+'</span><span><b>vs '+esc(g.opp)+'</b><br><span class="muted">'+esc(g.date)+'</span></span></span><span class="gs">'+g.us+'–'+g.them+'</span></button>';}).join(''):'<p class="muted">No finished games yet. Use “End game &amp; save” when a game is over.</p>');
 }
 
+/* ---------- app updates (installed app) ---------- */
+var APP_VERSION='20261107200526';
+function showUpdate(){if(document.getElementById('upd'))return;var b=document.createElement('button');b.id='upd';b.className='upd';b.innerHTML='✨ New version ready · <b>Tap to update</b>';b.onclick=function(){save();location.reload();};document.body.appendChild(b);}
+function checkUpdate(){if(inFrame||APP_VERSION==='dev'||!navigator.onLine)return;fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(j){if(j&&j.v&&j.v!==APP_VERSION)showUpdate();}).catch(function(){});}
+setTimeout(checkUpdate,4000);setInterval(checkUpdate,180000);
+document.addEventListener('visibilitychange',function(){if(!document.hidden)checkUpdate();});
 /* ---------- tap feedback ---------- */
 var PRESS_SEL='.mk,.ac,.ms,.tg,.tb,.oppb,.ib,.btn,.ck,.tile';
 document.addEventListener('touchstart',function(){},{passive:true});

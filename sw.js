@@ -1,4 +1,4 @@
-const CACHE = 'team-stats-v14';
+const CACHE = 'team-stats-v20261107200526';
 const CORE = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png', './favicon.png'];
 
 self.addEventListener('install', e => {
@@ -13,14 +13,14 @@ self.addEventListener('fetch', e => {
   const url = new URL(req.url);
   // App page: try network first (so updates arrive), fall back to cache when offline
   if (req.mode === 'navigate') {
-    e.respondWith(fetch(req).then(res => {
+    e.respondWith(fetch(req.url, { cache: 'no-store', credentials: 'same-origin' }).then(res => {
       const copy = res.clone();
       caches.open(CACHE).then(c => c.put('./index.html', copy));
       return res;
     }).catch(() => caches.match('./index.html')));
     return;
   }
-  if (url.origin === location.origin) {
+  if (url.origin === location.origin && !url.pathname.endsWith('version.json')) {
     e.respondWith(caches.match(req).then(m => m || fetch(req)));
     return;
   }

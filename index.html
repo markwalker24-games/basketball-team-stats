@@ -401,7 +401,7 @@ textarea.cp{width:100%;height:160px;font-size:13px;border:1px solid var(--line2)
 .sj .jz{width:100%;max-width:60px;transition:opacity .12s,filter .12s}
 .sj.sm .jz{max-width:48px}
 .sj .nm{font-size:12px;font-weight:600;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
-.sj .mt{font-size:10px;color:var(--muted);white-space:nowrap}
+.sj .mt{font-size:10px;color:var(--muted);white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
 .sj .mt.hot{color:var(--miss);font-weight:700}
 .sj:active{transform:scale(.95)}
 .sj.out{border-color:var(--miss);background:#fdf0ec}
@@ -474,6 +474,10 @@ html,body{height:100%;overflow:hidden}
 .tb.tapped,.oppb.tapped{animation:pressS .18s ease-out}
 .ib.tapped,.btn.tapped,.ck.tapped,.tile.tapped,.tcard.tapped{animation:pressG .18s ease-out}
 .sh.still{animation:none}
+.sj.open{border:2px dashed #cdbba8;background:#faf5ef}
+.sj.open .jz{opacity:.55}
+.sj.new{animation:slotin .22s ease-out}
+@keyframes slotin{from{transform:translateY(14px) scale(.9);opacity:.4}to{transform:none;opacity:1}}
 </style></head><body><div id="root"></div><script type="application/json" id="saved">{"teams":[{"id":"t1","team":"My Team","abbr":"US","roster":[],"games":[],"settings":{"periodMin":8,"periods":4,"v3":1}}],"cur":"t1","rev":0}</script><script id="app">
 (function(){
 'use strict';
@@ -1016,19 +1020,25 @@ function helpSheet(){
   q('Moving to a new phone','Shared teams: open your contributor link on the new phone and join. Unshared teams: use <b>Back up / restore</b> at the bottom of the Share sheet.')+
  '</div>';
 }
-var subOut={},subIn={};
-function openSub(pid){subOut={};subIn={};if(pid){if(L.onCourt.indexOf(pid)>=0)subOut[pid]=1;else subIn[pid]=1;}openSheet(subSheet);}
+var subOut={},subIn={},subSeq=0;
+function openSub(pid){subOut={};subIn={};subSeq=0;if(pid){if(L.onCourt.indexOf(pid)>=0)subOut[pid]=++subSeq;else subIn[pid]=++subSeq;}openSheet(subSheet);}
+function subPlan(){var ins=Object.keys(subIn).sort(function(a,b){return subIn[a]-subIn[b];}),q=ins.slice(),slots=[];L.onCourt.forEach(function(id){if(subOut[id])slots.push(q.length?{id:q.shift(),inn:1}:{open:1,was:id});else slots.push({id:id});});q.forEach(function(id){slots.push({id:id,inn:1});});return {ins:ins,slots:slots};}
 function subSheet(){
- var T=tally(L.events),rm=rosterMap(S.roster);
- var on=L.onCourt.map(function(id){return rm[id];}).filter(Boolean),bench=sortRoster(S.roster.filter(function(p){return L.onCourt.indexOf(p.id)<0;}));
- var outs=on.filter(function(p){return subOut[p.id];}),ins=bench.filter(function(p){return subIn[p.id];}),after=on.length-outs.length+ins.length;
- var sj=function(p,court){var x=T[p.id]||blank(),mark=court?(subOut[p.id]?'out':''):(subIn[p.id]?'in':'');
-  return '<button class="sj'+(court?'':' sm')+(mark?' '+mark:'')+'" data-act="'+(court?'sub-out':'sub-in')+'" data-id="'+p.id+'">'+(mark?'<span class="sb2">'+(mark==='out'?'OUT ↓':'IN ↑')+'</span>':'')+'<span class="jz">'+jersey(p.num)+'</span><span class="nm">'+esc(p.name)+'</span><span class="mt'+(x.pf>=4?' hot':'')+'">'+x.pts+'p · '+x.pf+'f'+(L.mins[p.id]?' · '+fmtMin(L.mins[p.id]):'')+'</span></button>';};
- var changed=outs.length||ins.length;
- var sum=changed?('<div>'+(outs.length?'<span class="o">OUT</span> '+outs.map(function(p){return esc(p.name);}).join(', '):'')+(outs.length&&ins.length?' &nbsp;→&nbsp; ':'')+(ins.length?'<span class="i">IN</span> '+ins.map(function(p){return esc(p.name);}).join(', '):'')+'</div><div class="'+(after!==5?'w':'muted')+'" style="font-size:13px">'+after+' on court after this'+(after!==5?' (usually 5)':'')+'</div>'):'<div class="muted">Tap players on the court to take them out, and bench players to put them in.</div>';
+ var T=tally(L.events),rm=rosterMap(S.roster),plan=subPlan();
+ var outs=L.onCourt.filter(function(id){return subOut[id]&&rm[id];}).map(function(id){return rm[id];});
+ var ins=plan.ins.map(function(id){return rm[id];}).filter(Boolean);
+ var bench=sortRoster(S.roster.filter(function(p){return L.onCourt.indexOf(p.id)<0&&!subIn[p.id];}));
+ var meta=function(p){var x=T[p.id]||blank();return '<span class="mt'+(x.pf>=4?' hot':'')+'">'+x.pts+'p · '+x.pf+'f'+(L.mins[p.id]?' · '+fmtMin(L.mins[p.id]):'')+'</span>';};
+ var card=function(p,act,mark,small){return '<button class="sj'+(small?' sm':'')+(mark?' '+mark:'')+((subIn[p.id]===subSeq||subOut[p.id]===subSeq)&&mark?' new':'')+'" data-act="'+act+'" data-id="'+p.id+'">'+(mark?'<span class="sb2">'+(mark==='out'?'OUT ↓':'IN ↑')+'</span>':'')+'<span class="jz">'+jersey(p.num)+'</span><span class="nm">'+esc(p.name)+'</span>'+meta(p)+'</button>';};
+ var court=plan.slots.map(function(sl){
+  if(sl.open)return '<div class="sj open"><span class="jz">'+jersey('?','#d8ccbf','#c4b5a5')+'</span><span class="nm">Open</span><span class="mt">pick below</span></div>';
+  var p=rm[sl.id];if(!p)return '';return sl.inn?card(p,'sub-in','in',false):card(p,'sub-out','',false);}).join('');
+ var benchHtml=outs.map(function(p){return card(p,'sub-out','out',true);}).join('')+bench.map(function(p){return card(p,'sub-in','',true);}).join('');
+ var after=plan.slots.filter(function(x){return !x.open;}).length,changed=outs.length||ins.length;
+ var sum=changed?('<div>'+(outs.length?'<span class="o">OUT</span> '+outs.map(function(p){return esc(p.name);}).join(', '):'')+(outs.length&&ins.length?' &nbsp;→&nbsp; ':'')+(ins.length?'<span class="i">IN</span> '+ins.map(function(p){return esc(p.name);}).join(', '):'')+'</div><div class="'+(after!==5?'w':'muted')+'" style="font-size:13px">'+after+' on court after this'+(after!==5?' (usually 5)':'')+'</div>'):'<div class="muted">Tap a player on the court to take her out, then tap who goes in. The court row shows your new lineup.</div>';
  return head('Substitution')+
-  '<div class="sec-lbl">ON COURT <em>tap to take out</em></div><div class="sjgrid">'+(on.length?on.map(function(p){return sj(p,true);}).join(''):'<div class="muted" style="grid-column:1/-1">Nobody on the court yet.</div>')+'</div>'+
-  '<div class="sec-lbl" style="margin-top:18px">BENCH <em>tap to put in</em></div><div class="sjgrid">'+(bench.length?bench.map(function(p){return sj(p,false);}).join(''):'<div class="muted" style="grid-column:1/-1">Everyone is on the court.</div>')+'</div>'+
+  '<div class="sec-lbl">ON COURT <em>'+(changed?'new lineup':'tap to take out')+'</em></div><div class="sjgrid">'+(court||'<div class="muted" style="grid-column:1/-1">Nobody on the court yet. Tap bench players to put them in.</div>')+'</div>'+
+  '<div class="sec-lbl" style="margin-top:18px">BENCH <em>tap to put in</em></div><div class="sjgrid">'+(benchHtml||'<div class="muted" style="grid-column:1/-1">Everyone is on the court.</div>')+'</div>'+
   '<div class="subsum">'+sum+'</div>'+
   '<div class="btns"><button class="btn sec" data-act="close">Cancel</button><button class="btn" data-act="sub-apply"'+(changed?'':' style="opacity:.5"')+'>'+(outs.length===1&&ins.length===1?'Swap':'Confirm sub')+'</button></div>';
 }
@@ -1493,10 +1503,10 @@ document.addEventListener('click',function(e){
   if(pending||sel){pending=null;sel=null;render();break;}
   var ev=L.events.pop();if(ev){S.tomb.ev.push(ev.id);save();toast('Undid: '+evText(ev));}else toast('Nothing to undo');render();break;
  case 'sub':sel=null;pending=null;openSub(null);break;
- case 'sub-out':if(subOut[d.id])delete subOut[d.id];else subOut[d.id]=1;buzz(8);refreshSheet();break;
- case 'sub-in':if(subIn[d.id])delete subIn[d.id];else subIn[d.id]=1;buzz(8);refreshSheet();break;
+ case 'sub-out':if(subOut[d.id])delete subOut[d.id];else subOut[d.id]=++subSeq;buzz(8);refreshSheet();break;
+ case 'sub-in':if(subIn[d.id])delete subIn[d.id];else subIn[d.id]=++subSeq;buzz(8);refreshSheet();break;
  case 'sub-apply':
-  var outs=L.onCourt.filter(function(id){return subOut[id];}),ins=sortRoster(S.roster).map(function(p){return p.id;}).filter(function(id){return subIn[id];});
+  var outs=L.onCourt.filter(function(id){return subOut[id];}),ins=subPlan().ins;
   if(!outs.length&&!ins.length){closeSheet();break;}
   var q=ins.slice(),nc=[];L.onCourt.forEach(function(id){if(subOut[id]){if(q.length)nc.push(q.shift());}else nc.push(id);});nc=nc.concat(q);
   L.onCourt=nc;L.oAt=Date.now();save();
